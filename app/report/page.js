@@ -109,10 +109,7 @@ export default function ReportLost() {
     try {
       const { error } = await supabase
         .from('reports')
-        .insert([{
-          ...formData,
-          created_at: new Date().toISOString()
-        }])
+        .insert([formData])
 
       if (error) throw error
 

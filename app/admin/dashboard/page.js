@@ -95,7 +95,7 @@ export default function AdminDashboard() {
 
   const handleHelp = () => {
     setSettingsMenuOpen(false)
-    alert('Help feature not yet implemented')
+    router.push('/admin/help')
   }
 
   const handleLogout = () => {

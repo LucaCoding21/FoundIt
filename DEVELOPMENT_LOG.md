@@ -1,5 +1,262 @@
 # FoundIt Development Log
 
+## October 5, 2025 - Report Resolution Refresh Fix
+
+### Fixed Reports Not Refreshing After Marking as Resolved
+
+Fixed bug where resolved reports still appeared in the admin reports list:
+
+✓ **Issue:**
+
+- Marking a report as resolved deleted it from database
+- But reports page didn't refresh to show updated list
+- Stale data remained visible until manual page refresh
+
+✓ **Solution:**
+
+- Added `?refresh=true` query parameter when navigating back
+- Reports page detects refresh param and refetches data
+- URL cleaned up automatically after refresh
+- Simple, non-overengineered solution
+
+**Files Updated:**
+
+- `/app/admin/matches/[reportId]/page.js` - Add refresh param to redirect
+- `/app/admin/reports/page.js` - Detect refresh param and auto-refresh
+
+**Result:**
+
+- Reports list automatically updates when marking as resolved
+- Clean user experience with no stale data
+- URL stays clean without visible query params
+
+## October 5, 2025 - Student Report Submission Bug Fix
+
+### Fixed 400 Error When Submitting Reports
+
+Fixed critical bug preventing students from submitting lost item reports:
+
+✓ **Issue:**
+
+- Students received 400 error when submitting reports
+- Error message mentioned "created_at" in URL
+- Manual `created_at` timestamp conflicted with Supabase defaults
+
+✓ **Solution:**
+
+- Removed manual `created_at: new Date().toISOString()` from insert
+- Let Supabase handle timestamp automatically with default value
+- Supabase columns with default values should not be manually set
+
+✓ **Technical Details:**
+
+- RLS policies may prevent manual setting of certain fields
+- Database columns with defaults (like `now()`) handle timestamps automatically
+- Manually setting can cause format or permission conflicts
+
+**Files Updated:**
+
+- `/app/report/page.js` - Removed manual created_at field
+
+**Result:**
+
+- Student report submissions now work correctly
+- Clean error-free submission flow
+- Automatic timestamp handling by Supabase
+
+## October 5, 2025 - Service Worker Bug Fix
+
+### Critical Bug Fix for Form Submissions
+
+Fixed service worker causing report submission failures:
+
+✓ **Issues Found:**
+
+- Service worker was trying to cache POST requests (not allowed by browsers)
+- Caused "Failed to execute 'put' on 'Cache': Request method 'POST' is unsupported" error
+- Blocked form submissions and Supabase API calls
+- Missing PWA icons causing 404 errors
+
+✓ **Service Worker Fixes:**
+
+- Now only caches GET requests (skips POST, PUT, DELETE, etc.)
+- Skips caching all Supabase API requests (supabase.co domain)
+- Only caches successful responses (status 200)
+- Prevents interference with form submissions and database operations
+- Bumped cache version to v2 for automatic update
+
+✓ **PWA Manifest Fix:**
+
+- Removed icon references (icon-192.png, icon-512.png) temporarily
+- Icons can be added later without breaking functionality
+- Prevents 404 errors in console
+- PWA still works, just without custom home screen icons
+
+**Implementation:**
+
+- Updated `/public/sw.js` with proper request filtering
+- Updated `/public/manifest.json` to remove missing icons
+- Simple, defensive caching strategy
+- No more interference with API calls
+
+**Result:**
+
+- Report submissions now work correctly
+- Forms submit without service worker errors
+- Clean console without 404 errors
+- PWA functionality maintained
+
+## October 5, 2025 - Admin Login Redesign
+
+### Two-Panel Login with Framer-Style Transition
+
+Completely redesigned the admin login page with a beautiful split-screen layout and smooth entrance animation:
+
+✓ **Design & Layout**
+
+- Two-panel split design: Branding left, Login form right
+- Left panel: Large FoundIt logo with magnifying glass icon and tagline
+- Right panel: Clean, modern login form with email and password
+- Mobile-responsive: Stacks vertically on mobile, side-by-side on desktop (lg+)
+- Smooth 1-second entrance animation on page load
+
+✓ **Framer-Style Transition**
+
+- Left panel slides in from left with fade (`-translate-x-12` to `translate-x-0`)
+- Right panel slides in from right with fade (`translate-x-12` to `translate-x-0`)
+- Both panels animate simultaneously with `duration-1000 ease-out`
+- Creates beautiful "opening" effect like Framer transitions
+- Smooth, elegant entrance that feels professional
+
+✓ **Authentication**
+
+- Email + Password login (Supabase ready)
+- Hardcoded credentials for now: `admin@sfu.ca` / `admin123`
+- Updated `lib/auth.js` to accept email parameter
+- Form validation with required fields
+- Error handling with clear error messages
+- Loading state during login ("Signing In..." button)
+
+✓ **Form Design**
+
+- Large, touch-friendly input fields with 2xl rounded corners
+- Placeholder text instead of labels (cleaner, more modern)
+- Theme blue (#3686C7) focus ring
+- Large "Sign In" button with hover effects
+- "Forgot Password" link with alert for IT support
+- Disabled state for button during loading
+
+✓ **Branding Panel**
+
+- Beautiful gradient background (light blue to sky blue)
+- Large 7xl FoundIt logo with custom magnifying glass SVG icon
+- Tagline: "Making it easy to find what's yours"
+- Hidden on mobile, shown on desktop (lg:flex)
+- Centered content with perfect spacing
+
+✓ **Mobile Experience**
+
+- Single column layout with logo at top
+- Form centered and properly sized
+- All transitions work smoothly on mobile
+- Touch-optimized input sizes and spacing
+- Responsive logo sizing (5xl on mobile, 7xl on desktop)
+
+✓ **Visual Details**
+
+- Custom magnifying glass icon with blue dot in center
+- Clean typography with proper font weights
+- Consistent theme blue color throughout
+- White background on form panel
+- No gradients in main areas (just subtle gradient on left panel)
+- Professional, modern aesthetic
+
+**Implementation:**
+
+- Completely rewrote `/app/admin/login/page.js`
+- Updated `/lib/auth.js` to handle email + password
+- Uses React useState for mount detection to trigger animations
+- Simple, non-overengineered solution
+- Clean, maintainable code
+
+**Result:**
+
+- Professional, modern admin login that feels like a premium product
+- Smooth Framer-style transition creates great first impression
+- Ready for Supabase auth when needed (just update login function)
+- Mobile and desktop optimized
+- Matches the quality of the rest of the app
+
+## October 5, 2025 - Admin Verification Guide
+
+### Item Verification Help Screen
+
+Created a comprehensive yet scannable verification guide for admins at the counter:
+
+✓ **Quick Verification Guide**
+
+- New help page at `/app/admin/help/page.js`
+- Accessible from settings menu in Dashboard and Reports
+- Mobile-first design with desktop optimization
+- Organized by item categories
+
+✓ **Item Categories Covered**
+
+- **Phone**: Passcode/Face ID, wallpaper, recent activity, settings
+- **Wallet/ID**: Student ID number, name verification, photo match, contents
+- **Keys**: Key purposes, keychain details, room numbers, car info
+- **Bags/Backpacks**: Contents, unique marks, brand/color, compartments
+- **General Items**: Details, unique marks, loss context, reporter matching
+
+✓ **Design Principles**
+
+- Short, scannable content (no walls of text)
+- Icon-based visual hierarchy
+- Card-based layout for easy scanning
+- Color-coded sections (blue tips, red flags, green signs)
+- Touch-friendly for mobile use
+
+✓ **Key Features**
+
+- **Quick Reminder Banner**: "Ask specific questions" at top
+- **Category Cards**: Organized verification tips by item type
+- **Red Flags Section**: Warning signs of fraud
+- **Good Signs Section**: Positive indicators of real owner
+- **Trust Your Gut**: Final reminder to ask more if unsure
+
+✓ **Mobile & Desktop Optimized**
+
+- Mobile: Single column, back button, compact spacing
+- Desktop: 2-column grid, max-width centered, better padding
+- Consistent with FoundIt design system
+- Theme blue (#3686C7) throughout
+
+✓ **User Experience**
+
+- Accessible from any admin page settings menu
+- No more "not yet implemented" alert
+- Clean navigation with back button
+- Scannable format - admins can read while helping students
+- Practical, actionable tips
+
+**Files Created:**
+
+- `/app/admin/help/page.js` - Verification guide page
+
+**Files Updated:**
+
+- `/app/admin/dashboard/page.js` - Help menu navigates to guide
+- `/app/admin/reports/page.js` - Help menu navigates to guide
+- `/components/AdminSidebar.js` - Help link navigates to guide (desktop)
+
+**Result:**
+
+- Admins have quick reference for verifying ownership
+- Reduces fraud risk with practical verification tips
+- Easy to scan during live interactions
+- Professional, well-designed help system
+- Simple, non-overengineered implementation
+
 ## October 5, 2025 - PWA (Progressive Web App) Setup
 
 ### Mobile Installation Support

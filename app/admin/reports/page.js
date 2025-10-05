@@ -22,6 +22,13 @@ export default function AdminReports() {
       return
     }
     fetchData()
+    
+    // Check for refresh param
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('refresh')) {
+      // Clean up URL without refresh param
+      window.history.replaceState({}, '', '/admin/reports')
+    }
   }, [router])
 
   const fetchData = async () => {
@@ -46,7 +53,7 @@ export default function AdminReports() {
 
   const handleHelp = () => {
     setSettingsMenuOpen(false)
-    alert('Help feature not yet implemented')
+    router.push('/admin/help')
   }
 
   const handleLogout = () => {

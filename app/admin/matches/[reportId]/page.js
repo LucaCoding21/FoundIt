@@ -69,15 +69,31 @@ export default function MatchesPage() {
   }
 
   const handleResolveReport = async () => {
-    const { error } = await supabase
+    console.log('=== RESOLVING REPORT ===')
+    console.log('Report ID:', reportId)
+    console.log('Report ID type:', typeof reportId)
+    console.log('Full report object:', report)
+    
+    const { data, error } = await supabase
       .from('reports')
       .delete()
       .eq('id', reportId)
+      .select()
 
-    if (!error) {
-      router.push('/admin/reports')
-    } else {
+    console.log('Delete response data:', data)
+    console.log('Delete response error:', error)
+
+    if (error) {
+      console.error('=== DELETE ERROR ===')
+      console.error('Error object:', error)
+      console.error('Error message:', error.message)
+      console.error('Error code:', error.code)
       alert('Error resolving report: ' + error.message)
+    } else {
+      console.log('=== DELETE SUCCESS ===')
+      console.log('Deleted rows:', data)
+      // Navigate back and force a refresh
+      router.push('/admin/reports?refresh=true')
     }
   }
 
@@ -183,15 +199,17 @@ export default function MatchesPage() {
         )}
 
         {/* Contact Section */}
-        <div className="grid grid-cols-2 gap-6 mb-4">
+        <div className={`grid ${report.phone ? 'grid-cols-2' : 'grid-cols-1'} gap-6 mb-4`}>
           <div>
             <p className="text-sm text-gray-500 mb-1">Contact</p>
             <p className="text-base text-gray-900 font-medium">{report.email}</p>
           </div>
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Phone Number</p>
-            <p className="text-base text-gray-900 font-medium">{report.phone || '444 444 4444'}</p>
-          </div>
+          {report.phone && (
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Phone Number</p>
+              <p className="text-base text-gray-900 font-medium">{report.phone}</p>
+            </div>
+          )}
         </div>
 
         {/* Description */}
@@ -313,7 +331,11 @@ export default function MatchesPage() {
                   Cancel
                 </button>
                 <button
-                  onClick={handleResolveReport}
+                  onClick={() => {
+                    console.log('Resolve button clicked!')
+                    setShowResolveModal(false)
+                    handleResolveReport()
+                  }}
                   className="flex-1 py-3 px-4 rounded-xl font-semibold text-white transition-colors"
                   style={{ backgroundColor: '#10b981' }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}

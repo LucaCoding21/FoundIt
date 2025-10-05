@@ -95,15 +95,20 @@ export default function AdminSidebar() {
 
       {/* Bottom Section */}
       <div className="px-4 py-4 border-t border-gray-200 space-y-2">
-        <button
-          onClick={() => alert('Help feature not yet implemented')}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-gray-700 hover:bg-gray-100 transition-all w-full"
+        <Link
+          href="/admin/help"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+            isActive('/admin/help')
+              ? 'text-white shadow-md'
+              : 'text-gray-700 hover:bg-gray-100'
+          }`}
+          style={isActive('/admin/help') ? { backgroundColor: '#3686C7' } : {}}
         >
           <svg className="w-6 h-6" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>Help</span>
-        </button>
+        </Link>
 
         <button
           onClick={handleLogout}

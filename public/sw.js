@@ -1,5 +1,5 @@
 // Service Worker for FoundIt PWA
-const CACHE_NAME = 'foundit-v1';
+const CACHE_NAME = 'foundit-v2';
 const urlsToCache = [
   '/',
   '/manifest.json'
@@ -32,16 +32,28 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - network first, fallback to cache
 self.addEventListener('fetch', (event) => {
+  // Only cache GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip caching Supabase API requests
+  if (event.request.url.includes('supabase.co')) {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Clone the response
-        const responseToCache = response.clone();
-        
-        caches.open(CACHE_NAME)
-          .then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+        // Only cache successful responses
+        if (response.status === 200) {
+          const responseToCache = response.clone();
+          
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+        }
         
         return response;
       })
