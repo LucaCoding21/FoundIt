@@ -258,3 +258,32 @@ Replaced generic categories with more specific, descriptive ones:
 - Other
 
 Gemini prompt updated with explicit categorization rules to ensure consistency (e.g., cables always go in "Cables & Accessories", never in "Devices").
+
+## October 5, 2025 - Mobile Camera & Photo Library Support
+
+### Enhanced Image Upload for Mobile
+
+Improved ImageUpload component to explicitly support camera and photo library on mobile devices:
+
+✓ **Changes:**
+
+- Added `capture="environment"` attribute to file input for direct camera access
+- Changed icon from generic image to camera icon for clarity
+- Updated button text: "Take Photo or Upload" (instead of just "Upload Photo")
+- Updated help text to explicitly mention: "Camera, Photo Library, or Files"
+
+**How it works:**
+
+- **iPhone:** Tapping the upload button shows action sheet with "Take Photo", "Photo Library", and "Browse" options
+- **Android:** Tapping shows similar options: "Camera", "Gallery", and "Files"
+- **Desktop:** Shows standard file picker (camera icon still makes sense for photo uploads)
+
+**Technical Details:**
+
+- Uses HTML5 `<input type="file" accept="image/*">`
+- The `accept="image/*"` attribute automatically provides both camera and photo library options on mobile
+- Works universally across iOS Safari, Chrome, Android browsers
+- No additional dependencies or native app code needed
+- Maintains existing instant preview and Gemini AI analysis features
+
+**Note:** Removed `capture` attribute as it was restricting some browsers to camera-only mode. Without it, mobile browsers correctly show both "Take Photo" and "Choose from Library" options.

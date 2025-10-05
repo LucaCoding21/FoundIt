@@ -102,7 +102,6 @@ export default function ImageUpload({ currentImageUrl, onImageUploaded, onFileSe
           <input
             type="file"
             accept="image/*"
-            capture="environment"
             onChange={handleFileChange}
             disabled={uploading}
             className="hidden"
