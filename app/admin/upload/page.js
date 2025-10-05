@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import AdminNav from '@/components/AdminNav'
-import ImageUpload from '@/components/ImageUpload'
+import BottomNav from '@/components/BottomNav'
+import CategoryModal from '@/components/CategoryModal'
+import CampusModal from '@/components/CampusModal'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { isAdmin } from '@/lib/auth'
 import { analyzeFoundItem } from '@/lib/gemini'
@@ -16,6 +18,16 @@ const categories = [
   'Daily Items',
   'Other'
 ]
+
+const categoryEmojis = {
+  'Clothing': '👕',
+  'Devices': '📱',
+  'Cables & Accessories': '🔌',
+  'Essentials': '🔑',
+  'Daily Items': '🎒',
+  'Other': '📦'
+}
+
 const campuses = ['Burnaby', 'Surrey', 'Vancouver']
 
 export default function AdminUpload() {
@@ -31,7 +43,12 @@ export default function AdminUpload() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
-  const [imageFile, setImageFile] = useState(null)
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false)
+  const [campusModalOpen, setCampusModalOpen] = useState(false)
+  const [preview, setPreview] = useState(null)
+  const [uploading, setUploading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [abortController, setAbortController] = useState(null)
 
   useEffect(() => {
     if (!isAdmin()) {
@@ -44,18 +61,31 @@ export default function AdminUpload() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleImageUploaded = (url) => {
-    setFormData(prev => ({ ...prev, photo_url: url }))
-  }
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
 
-  const handleFileSelected = async (file) => {
-    setImageFile(file)
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image must be less than 5MB')
+      return
+    }
+
+    // Instant local preview
+    const localBlobUrl = URL.createObjectURL(file)
+    setPreview(localBlobUrl)
     
-    // Start AI analysis immediately (runs in parallel with upload)
+    // Start AI analysis
+    const controller = new AbortController()
+    setAbortController(controller)
     setAnalyzing(true)
     
     try {
-      const result = await analyzeFoundItem(file)
+      const result = await analyzeFoundItem(file, controller.signal)
       
       if (result.success) {
         setFormData(prev => ({
@@ -65,13 +95,57 @@ export default function AdminUpload() {
           description: result.data.description || prev.description,
           hidden_notes: result.data.hidden_notes || prev.hidden_notes,
         }))
-      } else {
-        console.error('Analysis failed:', result.error)
       }
     } catch (error) {
-      console.error('Error analyzing photo:', error)
+      if (!error.message?.includes('cancelled')) {
+        console.error('Error analyzing photo:', error)
+      }
     } finally {
       setAnalyzing(false)
+      setAbortController(null)
+    }
+
+    // Upload to Supabase
+    setUploading(true)
+
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
+      const filePath = `items/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('foundit-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage
+        .from('foundit-images')
+        .getPublicUrl(filePath)
+
+      const publicUrl = data.publicUrl
+      
+      URL.revokeObjectURL(localBlobUrl)
+      setPreview(publicUrl)
+      setFormData(prev => ({ ...prev, photo_url: publicUrl }))
+
+    } catch (err) {
+      console.error('Upload error:', err)
+      URL.revokeObjectURL(localBlobUrl)
+      setPreview(null)
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleCancelAnalysis = () => {
+    if (abortController) {
+      abortController.abort()
+      setAnalyzing(false)
+      setAbortController(null)
     }
   }
 
@@ -79,7 +153,6 @@ export default function AdminUpload() {
     e.preventDefault()
 
     if (!formData.photo_url) {
-      alert('Please upload a photo')
       return
     }
 
@@ -100,150 +173,254 @@ export default function AdminUpload() {
     setSubmitting(false)
 
     if (!error) {
-      alert('Item added successfully!')
-      router.push('/admin/dashboard')
+      setShowSuccess(true)
+      setTimeout(() => {
+        router.push('/admin/dashboard')
+      }, 1500)
     } else {
       alert('Error adding item: ' + error.message)
     }
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <AdminNav />
-      
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">Upload Found Item</h1>
-
-        <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-8">
-          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
-            <ImageUpload
-              currentImageUrl={formData.photo_url}
-              onImageUploaded={handleImageUploaded}
-              onFileSelected={handleFileSelected}
-              required={true}
-            />
-
-            {analyzing && (
-              <div className="w-full px-4 py-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl font-semibold flex items-center justify-center gap-2">
-                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
-                AI analyzing photo...
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Title <span className="text-sfu-red">*</span>
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                placeholder="e.g. Black Nike Hoodie"
-                required
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Category <span className="text-sfu-red">*</span>
-                </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent bg-white"
-                >
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Campus <span className="text-sfu-red">*</span>
-                </label>
-                <select
-                  name="campus"
-                  value={formData.campus}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent bg-white"
-                >
-                  {campuses.map(campus => (
-                    <option key={campus} value={campus}>{campus}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Date Found <span className="text-sfu-red">*</span>
-              </label>
-              <input
-                type="date"
-                name="date_found"
-                value={formData.date_found}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Description <span className="text-sfu-red">*</span>
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                placeholder="e.g. Black hoodie with white strings, size medium"
-                required
-                rows={3}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent resize-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Hidden Notes (for verification)
-              </label>
-              <textarea
-                name="hidden_notes"
-                value={formData.hidden_notes}
-                onChange={handleChange}
-                placeholder="e.g. Has small coffee stain on left sleeve"
-                rows={2}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent resize-none"
-              />
-              <p className="text-sm text-gray-500 mt-2">Only visible to admins</p>
-            </div>
-
-            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="w-full sm:w-auto px-6 py-3.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 smooth-transition font-semibold touch-feedback"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full sm:flex-1 px-6 py-3.5 bg-sfu-red text-white rounded-xl hover:bg-red-700 smooth-transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed touch-feedback"
-              >
-                {submitting ? 'Saving...' : 'Save Item'}
-              </button>
-            </div>
-          </form>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Top Header */}
+      <div className="bg-white sticky top-0 z-40 border-b border-gray-200">
+        <div className="px-5 py-4">
+          <div className="flex justify-between items-center">
+            <button 
+              onClick={() => router.back()}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <svg className="w-6 h-6 text-gray-700" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <h1 className="text-xl font-semibold text-gray-900">Upload Item</h1>
+            <button 
+              onClick={handleSubmit}
+              disabled={submitting || !formData.photo_url}
+              className="px-4 py-2 rounded-full font-semibold text-sm transition-all disabled:opacity-40"
+              style={{ 
+                backgroundColor: (!submitting && formData.photo_url) ? '#3686C7' : '#E5E7EB',
+                color: (!submitting && formData.photo_url) ? 'white' : '#9CA3AF'
+              }}
+            >
+              {submitting ? 'Saving...' : 'Done'}
+            </button>
+          </div>
         </div>
-      </main>
+      </div>
+
+      {/* Main Content */}
+      <form onSubmit={handleSubmit} className="px-5 py-6">
+        {/* Photo Upload Section */}
+        <div className="mb-6">
+          <label className="block">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={uploading}
+              className="hidden"
+            />
+            <div className={`relative w-full max-w-xs mx-auto aspect-[3/4] rounded-3xl overflow-hidden ${preview ? 'bg-black' : 'bg-gray-100'} cursor-pointer transition-all`}>
+              {preview ? (
+                <>
+                  <Image
+                    src={preview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all flex items-center justify-center">
+                    <div className="opacity-0 hover:opacity-100 transition-opacity">
+                      <div className="px-6 py-3 bg-white bg-opacity-90 rounded-full flex items-center gap-2">
+                        <svg className="w-5 h-5" style={{ color: '#3686C7' }} fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span className="text-sm font-semibold text-gray-900">Change Photo</span>
+                      </div>
+                    </div>
+                  </div>
+                  {uploading && (
+                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="animate-spin rounded-full h-10 w-10 border-3 border-white border-t-transparent mx-auto mb-3"></div>
+                        <p className="text-white font-medium">Uploading...</p>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(54, 134, 199, 0.1)' }}>
+                    <svg className="w-10 h-10" style={{ color: '#3686C7' }} fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-semibold text-gray-900 mb-1">Add Photo</p>
+                    <p className="text-sm text-gray-500">Tap to take or upload</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </label>
+        </div>
+
+        {/* AI Analysis Status */}
+        {analyzing && (
+          <div className="mb-6 px-4 py-3 rounded-2xl flex items-center justify-between gap-3" style={{ backgroundColor: 'rgba(54, 134, 199, 0.1)' }}>
+            <div className="flex items-center gap-3">
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-t-transparent" style={{ borderColor: '#3686C7', borderTopColor: 'transparent' }}></div>
+              <span className="text-sm font-medium" style={{ color: '#3686C7' }}>AI analyzing photo...</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleCancelAnalysis}
+              className="text-sm font-medium hover:opacity-70 transition-opacity"
+              style={{ color: '#3686C7' }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
+        {/* Form Fields */}
+        <div className="space-y-4">
+          {/* Title */}
+          <div className="bg-white rounded-2xl p-4">
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Item title"
+              required
+              className="w-full text-base font-medium text-gray-900 placeholder-gray-400 focus:outline-none"
+            />
+          </div>
+
+          {/* Category & Campus Row */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setCategoryModalOpen(true)}
+              className="bg-white rounded-2xl p-4 flex items-center gap-3 text-left hover:bg-gray-50 transition-colors"
+            >
+              <span className="text-2xl">{categoryEmojis[formData.category]}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 mb-0.5">Category</p>
+                <p className="text-sm font-medium text-gray-900 truncate">{formData.category}</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setCampusModalOpen(true)}
+              className="bg-white rounded-2xl p-4 flex items-center gap-3 text-left hover:bg-gray-50 transition-colors"
+            >
+              <span className="text-2xl">📍</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 mb-0.5">Campus</p>
+                <p className="text-sm font-medium text-gray-900 truncate">SFU {formData.campus}</p>
+              </div>
+              <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Date Found */}
+          <div className="bg-white rounded-2xl p-4">
+            <label className="text-xs text-gray-500 block mb-2">Date Found</label>
+            <input
+              type="date"
+              name="date_found"
+              value={formData.date_found}
+              onChange={handleChange}
+              required
+              className="w-full text-sm font-medium text-gray-900 focus:outline-none"
+            />
+          </div>
+
+          {/* Description */}
+          <div className="bg-white rounded-2xl p-4">
+            <label className="text-xs text-gray-500 block mb-2">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Describe the item in detail..."
+              required
+              rows={4}
+              className="w-full text-sm text-gray-900 placeholder-gray-400 focus:outline-none resize-none"
+            />
+          </div>
+
+          {/* Hidden Notes */}
+          <div className="bg-white rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-gray-500">Hidden Notes</label>
+              <span className="text-xs text-gray-400">Admin only</span>
+            </div>
+            <textarea
+              name="hidden_notes"
+              value={formData.hidden_notes}
+              onChange={handleChange}
+              placeholder="Private verification details..."
+              rows={3}
+              className="w-full text-sm text-gray-900 placeholder-gray-400 focus:outline-none resize-none"
+            />
+          </div>
+        </div>
+      </form>
+
+      <BottomNav />
+
+      <CategoryModal
+        isOpen={categoryModalOpen}
+        onClose={() => setCategoryModalOpen(false)}
+        onSelectCategory={(cat) => setFormData(prev => ({ ...prev, category: cat }))}
+        selectedCategory={formData.category}
+      />
+
+      <CampusModal
+        isOpen={campusModalOpen}
+        onClose={() => setCampusModalOpen(false)}
+        onSelectCampus={(campus) => {
+          const campusName = campus.split(', ')[1] || campus.split(' ')[1] || campuses[0]
+          setFormData(prev => ({ ...prev, campus: campusName }))
+        }}
+        selectedCampus={`SFU, ${formData.campus}`}
+      />
+
+      {/* Success Toast */}
+      {showSuccess && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span className="font-semibold">Item saved successfully!</span>
+          </div>
+        </div>
+      )}
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translate(-50%, -10px); }
+          to { opacity: 1; transform: translate(-50%, 0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+      `}</style>
     </div>
   )
 }
