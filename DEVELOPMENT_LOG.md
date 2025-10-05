@@ -1,5 +1,86 @@
 # FoundIt Development Log
 
+## October 5, 2025 - PWA Icon Configuration
+
+### Set FoundIt Dog Logo as App Icon
+
+Configured the FoundIt dog logo (`founditdog.png`) as the official icon for PWA, web, and app:
+
+✓ **Changes:**
+
+- Copied `founditdog.png` to public folder as multiple icon sizes
+- Updated PWA manifest to include 192x192 and 512x512 icons
+- Changed favicon from `.ico` to `.png` using dog logo
+- Configured Apple touch icon for iOS home screen
+- Icons now show the blue dog in magnifying glass logo
+
+✓ **Icon Files Created:**
+
+- `/public/icon-192.png` - For Apple touch icon and smaller displays
+- `/public/icon-512.png` - For larger displays and splash screens
+- `/public/favicon.png` - Browser tab icon
+
+✓ **Icon Configuration:**
+
+- Both sizes marked as "any maskable" for adaptive icons
+- Works on iOS, Android, and web browsers
+- Consistent branding across all platforms
+- Blue dog logo appears in app drawer, home screen, and browser tabs
+
+**Files Updated:**
+
+- `/public/manifest.json` - Added icon entries with sizes and purpose
+- `/app/layout.js` - Changed favicon reference to use PNG logo
+
+**Result:**
+
+- FoundIt dog logo now appears everywhere: browser tabs, home screen, app drawer
+- Professional, consistent branding across all devices
+- PWA ready with proper icon configuration
+- No more missing icon errors in manifest
+
+## October 5, 2025 - Report Field Mapping Fix
+
+### Fixed Missing Report Display
+
+Fixed incorrect field mapping in missing reports that was showing wrong data:
+
+✓ **Issues:**
+
+- Report cards showed `report.details` (description) instead of `report.title` (what they lost)
+- Detail page showed `report.location_description` (where they lost it) in the Description section
+- No section displayed the actual "Where Lost" information
+- Confusing data display for admins
+
+✓ **Solution:**
+
+- Report cards now show `report.title` as the title
+- Detail page Description section now shows `report.details` (actual description)
+- Added new "Where Lost" section showing `report.location_description`
+- Fixed email template to use correct `report.title`
+- Updated search to include all relevant fields
+
+✓ **Report Fields (Correct Mapping):**
+
+- `title` → What they lost (e.g., "AirPods Pro")
+- `details` → Description of the item
+- `location_description` → Where they lost it (e.g., "Near the library")
+- `campus` → Which campus
+- `category` → Item category
+- `email` / `phone` → Contact info
+
+**Files Updated:**
+
+- `/app/admin/reports/page.js` - Fixed card title display, updated search
+- `/app/admin/matches/[reportId]/page.js` - Fixed all field mappings, added "Where Lost" section
+
+**Result:**
+
+- Reports now display correct information
+- Admins can see: what was lost, description, and where it was lost
+- Clear, properly organized report details
+- Better matching email templates
+
 ## October 5, 2025 - Student Help Page & Upload Fixes
 
 ### Student Help Page Implementation
