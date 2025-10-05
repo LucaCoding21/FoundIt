@@ -1,5 +1,45 @@
 # FoundIt Development Log
 
+## October 5, 2025 - Bottom Navigation Size Increase
+
+### Made Bottom Nav ~30% Bigger on Mobile
+
+Increased the size of the bottom navigation for better touch targets and visibility:
+
+✓ **Changes:**
+
+- Icon size increased from `w-7 h-7` (28px) to `w-9 h-9` (36px) - ~29% larger
+- Vertical padding increased from `py-3` (12px) to `py-4` (16px) - ~33% larger
+- Gap increased from `gap-1` (4px) to `gap-1.5` (6px) - 50% larger
+- Overall navigation bar is noticeably larger and easier to tap
+
+✓ **Benefits:**
+
+- Better touch targets for mobile (follows iOS guidelines)
+- More visible and easier to use on phones
+- Better accessibility for users with larger fingers
+- More prominent navigation that's harder to miss
+- Still maintains clean, minimal design
+
+✓ **Applied To:**
+
+- Admin bottom navigation (BottomNav component)
+- Student bottom navigation (Home page)
+- All three admin tabs: Home, Upload, Reports
+- Both student tabs: Home, Report Lost Item
+
+**Files Updated:**
+
+- `/components/BottomNav.js` - Admin mobile navigation
+- `/app/page.js` - Student mobile navigation
+
+**Result:**
+
+- Bottom navigation is noticeably bigger and easier to tap
+- Better UX for mobile users
+- Professional appearance maintained
+- Desktop view unchanged (navigation hidden on desktop)
+
 ## October 5, 2025 - PWA Icon Configuration
 
 ### Set FoundIt Dog Logo as App Icon

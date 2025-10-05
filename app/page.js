@@ -311,12 +311,12 @@ export default function Home() {
 
       {/* Bottom Navigation (Mobile Only) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-bottom">
-        <div className="max-w-md mx-auto px-8 py-3">
+        <div className="max-w-md mx-auto px-8 py-4">
           <div className="flex justify-around items-center">
             {/* Home */}
-            <button className="flex flex-col items-center gap-1 relative transition-all duration-200 ease-out">
+            <button className="flex flex-col items-center gap-1.5 relative transition-all duration-200 ease-out">
               <svg 
-                className="w-7 h-7 transition-colors duration-200 ease-out" 
+                className="w-9 h-9 transition-colors duration-200 ease-out" 
                 style={{ color: '#3686C7' }}
                 fill="none"
                 strokeWidth="2.5"
@@ -330,10 +330,10 @@ export default function Home() {
             {/* Report Lost Item */}
             <button 
               onClick={() => router.push('/report')}
-              className="flex flex-col items-center gap-1 relative transition-all duration-200 ease-out"
+              className="flex flex-col items-center gap-1.5 relative transition-all duration-200 ease-out"
             >
               <svg 
-                className="w-7 h-7 transition-colors duration-200 ease-out"
+                className="w-9 h-9 transition-colors duration-200 ease-out"
                 style={{ color: '#9CA3AF' }}
                 fill="none"
                 strokeWidth="2"
