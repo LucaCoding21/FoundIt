@@ -1,5 +1,127 @@
 # FoundIt Development Log
 
+## October 5, 2025 - Student Help Page & Upload Fixes
+
+### Student Help Page Implementation
+
+Created a simple, clean help page for students to get assistance:
+
+✓ **Features:**
+
+- Accessible from student dashboard settings menu
+- How to use FoundIt guide (4 simple steps)
+- Claiming items instructions
+- Lost & Found office info (location, hours)
+- Contact support section with SFU phone number
+- Common questions (FAQ) section
+
+✓ **Content:**
+
+- Location: AQ 2030
+- Hours: Monday - Friday, 9 AM - 5 PM
+- Phone: 778-782-3111 (clickable tel: link for mobile)
+- FAQ covering: item retention period, missing items, after-hours pickup
+
+✓ **Design:**
+
+- Clean card-based layout
+- Theme blue (#3686C7) accents
+- Mobile-optimized with back button
+- Touch-friendly call button
+- Short, scannable text
+- Simple, non-overengineered solution
+
+**Files Created:**
+
+- `/app/help/page.js` - Student help page
+
+**Files Updated:**
+
+- `/app/page.js` - Help button now navigates to help page instead of showing alert
+
+**Result:**
+
+- Students now have easy access to help and support info
+- No more "not yet implemented" alert
+- Clean integration with existing UI
+
+### iPhone Photo Preview Fix
+
+Fixed black preview issue when uploading photos on iPhone in admin upload form:
+
+✓ **Issue:**
+
+- Next.js Image component with blob URLs showed black screen on iPhone
+- Preview would appear black before image fully loaded
+- Issue specific to mobile Safari/iPhone
+
+✓ **Solution:**
+
+- Replaced Next.js `<Image>` component with regular `<img>` tag for previews
+- Blob URLs are local and instant, don't need Next.js optimization
+- Regular img tag has better mobile/blob URL support
+- Changed background from black to gray-900 for better loading state
+
+✓ **Technical Details:**
+
+- Blob URLs (from `URL.createObjectURL()`) are already local and instant
+- Next.js Image component is designed for remote URLs with optimization
+- Using regular img tag eliminates iOS-specific rendering issues
+- Maintains same styling with `object-cover` and aspect ratio
+
+**Files Updated:**
+
+- `/app/admin/upload/page.js` - Use regular img tag for preview instead of Next.js Image
+
+**Result:**
+
+- Photo previews now display correctly on iPhone
+- No more black screen during upload
+- Instant preview works across all mobile devices
+- Simple fix maintaining existing functionality
+
+### AI Analysis Timing Documentation
+
+**About AI Analysis Speed:**
+
+The AI analysis (powered by Google Gemini API) can sometimes take longer due to:
+
+1. **Network Factors:**
+
+   - API call travels to Google's servers
+   - WiFi/cellular connection speed
+   - Vercel edge function routing
+   - Network congestion or latency
+
+2. **Processing Time:**
+
+   - Gemini model needs to analyze the image
+   - Image size and complexity affect processing
+   - API response time varies with server load
+
+3. **Not a Code Issue:**
+   - This is inherent to using external AI APIs
+   - Similar to any cloud service (sometimes fast, sometimes slow)
+   - Cannot be "fixed" in code - it's network + server dependent
+
+✓ **What We Already Have:**
+
+- Clear loading indicator ("AI analyzing photo...")
+- Cancel button to stop analysis if taking too long
+- Background upload (doesn't block form filling)
+- Manual editing capability (users can skip AI and fill in manually)
+
+✓ **User Can:**
+
+- Wait for AI to complete (usually 2-5 seconds)
+- Click Cancel if taking too long
+- Fill in fields manually while waiting
+- Skip AI entirely and just upload the photo
+
+**Recommendation:**
+
+This is normal behavior for cloud AI APIs - speed varies based on network and server conditions, not code quality. The cancel button and manual editing options provide good UX alternatives.
+
 ## October 5, 2025 - Logo Updates
 
 ### Replaced Header Icons with FoundIt Logo

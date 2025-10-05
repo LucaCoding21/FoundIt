@@ -164,7 +164,7 @@ export default function MatchesPage() {
         <div className="max-w-7xl mx-auto px-5 md:px-8 pt-5 md:pt-8">
         {/* Title and Date */}
         <div className="flex justify-between items-start mb-2">
-          <h2 className="text-2xl font-bold text-gray-900">{report.details}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{report.title}</h2>
           <span className="text-sm text-gray-500 whitespace-nowrap ml-3">{formatDate(report.created_at)}</span>
         </div>
 
@@ -181,7 +181,7 @@ export default function MatchesPage() {
           <div className="relative w-full max-w-2xl mx-auto aspect-[4/3] max-h-[280px] md:max-h-[400px] mb-4 md:mb-6 rounded-xl overflow-hidden">
             <Image
               src={report.photo_url}
-              alt={report.details}
+              alt={report.title}
               fill
               className="object-cover"
             />
@@ -213,10 +213,18 @@ export default function MatchesPage() {
         </div>
 
         {/* Description */}
-        <div className="mb-6 md:mb-8">
+        <div className="mb-4">
           <p className="text-sm text-gray-500 mb-1">Description</p>
-          <p className="text-base text-gray-900">{report.location_description || 'No additional description provided.'}</p>
+          <p className="text-base text-gray-900">{report.details || 'No description provided.'}</p>
         </div>
+
+        {/* Where Lost */}
+        {report.location_description && (
+          <div className="mb-6 md:mb-8">
+            <p className="text-sm text-gray-500 mb-1">Where Lost</p>
+            <p className="text-base text-gray-900">{report.location_description}</p>
+          </div>
+        )}
 
         {/* Mark as Resolved Button - Desktop inline */}
         <div className="hidden md:block mb-6 md:mb-8">
@@ -476,7 +484,7 @@ export default function MatchesPage() {
               <div className="grid grid-cols-2 gap-3">
                 {/* Email Button */}
                 <a
-                  href={`mailto:${report.email}?subject=Found Item Match: ${selectedMatch.title || 'Your Item'}&body=Hi,%0D%0A%0D%0AWe may have found your ${report.details}.%0D%0A%0D%0AItem details:%0D%0A- ${selectedMatch.title || 'Item'}%0D%0A- Location: SFU, ${selectedMatch.campus}%0D%0A- Description: ${selectedMatch.description}%0D%0A%0D%0APlease reply to confirm if this is your item.%0D%0A%0D%0AThanks,%0D%0ASFU Lost & Found`}
+                  href={`mailto:${report.email}?subject=Found Item Match: ${selectedMatch.title || 'Your Item'}&body=Hi,%0D%0A%0D%0AWe may have found your ${report.title}.%0D%0A%0D%0AItem details:%0D%0A- ${selectedMatch.title || 'Item'}%0D%0A- Location: SFU, ${selectedMatch.campus}%0D%0A- Description: ${selectedMatch.description}%0D%0A%0D%0APlease reply to confirm if this is your item.%0D%0A%0D%0AThanks,%0D%0ASFU Lost & Found`}
                   className="flex items-center justify-center gap-2 py-3 px-4 bg-white border-2 rounded-xl font-semibold text-gray-900 hover:bg-gray-50 transition-colors"
                   style={{ borderColor: '#3686C7' }}
                 >

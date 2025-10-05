@@ -78,7 +78,8 @@ export default function AdminReports() {
   const filteredReports = reports.filter(report => {
     if (!searchTerm) return true
     const searchLower = searchTerm.toLowerCase()
-    return report.details?.toLowerCase().includes(searchLower) ||
+    return report.title?.toLowerCase().includes(searchLower) ||
+           report.details?.toLowerCase().includes(searchLower) ||
            report.location_description?.toLowerCase().includes(searchLower) ||
            report.category?.toLowerCase().includes(searchLower)
   })
@@ -247,7 +248,7 @@ export default function AdminReports() {
 
                   {/* Title */}
                   <h2 className="text-lg font-semibold text-gray-900 mb-3">
-                    {report.details}
+                    {report.title}
                   </h2>
 
                   {/* Image if photo_url exists */}
@@ -255,7 +256,7 @@ export default function AdminReports() {
                     <div className="relative w-full h-[220px] mb-3 rounded-xl overflow-hidden">
                       <Image
                         src={report.photo_url}
-                        alt={report.details}
+                        alt={report.title}
                         fill
                         className="object-cover"
                       />

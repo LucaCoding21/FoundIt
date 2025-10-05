@@ -49,7 +49,7 @@ export default function Home() {
 
   const handleHelp = () => {
     setSettingsMenuOpen(false)
-    alert('Help feature not yet implemented')
+    router.push('/help')
   }
 
   const handleAbout = () => {

@@ -6,7 +6,6 @@ import BottomNav from '@/components/BottomNav'
 import AdminSidebar from '@/components/AdminSidebar'
 import CategoryModal from '@/components/CategoryModal'
 import CampusModal from '@/components/CampusModal'
-import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { isAdmin } from '@/lib/auth'
 import { analyzeFoundItem } from '@/lib/gemini'
@@ -246,14 +245,14 @@ export default function AdminUpload() {
                   disabled={uploading}
                   className="hidden"
                 />
-                <div className={`relative w-full max-w-md mx-auto lg:mx-0 aspect-[3/4] rounded-3xl overflow-hidden ${preview ? 'bg-black' : 'bg-gray-100'} cursor-pointer transition-all`}>
+                <div className={`relative w-full max-w-md mx-auto lg:mx-0 aspect-[3/4] rounded-3xl overflow-hidden ${preview ? 'bg-gray-900' : 'bg-gray-100'} cursor-pointer transition-all`}>
               {preview ? (
                 <>
-                  <Image
+                  {/* Use regular img tag for better mobile/blob URL support */}
+                  <img
                     src={preview}
                     alt="Preview"
-                    fill
-                    className="object-cover"
+                    className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-10 transition-all flex items-center justify-center">
                     <div className="opacity-0 hover:opacity-100 transition-opacity">
