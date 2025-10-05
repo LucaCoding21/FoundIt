@@ -6,6 +6,7 @@ import Image from 'next/image'
 import CategoryModal from '@/components/CategoryModal'
 import CampusModal from '@/components/CampusModal'
 import { supabase } from '@/lib/supabase'
+import foundItLogo from '@/assets/founditdog.png'
 
 const categoryEmojis = {
   'Clothing': '👕',
@@ -82,11 +83,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-5 md:px-8 py-4 md:py-6">
           {/* Mobile Header */}
           <div className="flex md:hidden justify-between items-center mb-4">
-            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-              <svg className="w-6 h-6 text-gray-700" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
+            <div className="p-2 translate-y-[5px]">
+              <Image
+                src={foundItLogo}
+                alt="FoundIt"
+                width={57}
+                height={57}
+                className="w-14 h-14"
+              />
+            </div>
             <h1 className="text-xl font-semibold text-gray-900">Home</h1>
             <div className="relative">
               <button 

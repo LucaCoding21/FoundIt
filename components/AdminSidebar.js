@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
+import foundItLogo from '@/assets/foundit.png'
 
 export default function AdminSidebar() {
   const pathname = usePathname()
@@ -23,8 +25,15 @@ export default function AdminSidebar() {
     <aside className="hidden md:flex md:flex-col fixed left-0 top-0 h-screen w-64 bg-white border-r border-gray-200 z-40">
       {/* Logo/Brand */}
       <div className="px-6 py-6 border-b border-gray-200">
-        <h1 className="text-2xl font-bold" style={{ color: '#3686C7' }}>FoundIt</h1>
-        <p className="text-sm text-gray-500 mt-1">Admin Portal</p>
+        <Image
+          src={foundItLogo}
+          alt="FoundIt"
+          width={150}
+          height={60}
+          className="w-auto h-12 mb-2"
+          priority
+        />
+        <p className="text-sm text-gray-500">Admin Portal</p>
       </div>
 
       {/* Navigation Links */}

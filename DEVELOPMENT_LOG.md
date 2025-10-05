@@ -1,5 +1,40 @@
 # FoundIt Development Log
 
+## October 5, 2025 - Logo Updates
+
+### Replaced Header Icons with FoundIt Logo
+
+Updated all page headers to use the FoundIt dog logo instead of magnifying glass icons:
+
+✓ **Changes:**
+
+- Replaced magnifying glass icons in mobile headers with FoundIt dog logo
+- Logo appears in top left corner of headers (57x57px, moved down 5px)
+- Logo is static (non-clickable) for branding purposes
+- Admin sidebar now uses full FoundIt text logo instead of text
+
+✓ **Pages Updated:**
+
+- Student home page (`/app/page.js`)
+- Admin dashboard (`/app/admin/dashboard/page.js`)
+- Admin reports page (`/app/admin/reports/page.js`)
+- Admin login page uses full logo banner
+- Admin sidebar (`/components/AdminSidebar.js`)
+
+**Files Updated:**
+
+- `/app/page.js` - Added FoundIt dog logo to header (57px, +5px down)
+- `/app/admin/dashboard/page.js` - Added FoundIt dog logo to header (57px, +5px down)
+- `/app/admin/reports/page.js` - Added FoundIt dog logo to header (57px, +5px down)
+- `/app/admin/login/page.js` - Uses full FoundIt text logo
+- `/components/AdminSidebar.js` - Replaced "FoundIt" text with logo image
+
+**Result:**
+
+- Consistent branding across all pages
+- Professional logo presence in headers and sidebar
+- Clean, recognizable brand identity throughout admin portal
+
 ## October 5, 2025 - Report Resolution Refresh Fix
 
 ### Fixed Reports Not Refreshing After Marking as Resolved

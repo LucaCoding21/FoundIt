@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { login } from '@/lib/auth'
+import foundItLogo from '@/assets/foundit.png'
 
 export default function AdminLogin() {
   const router = useRouter()
@@ -46,32 +48,14 @@ export default function AdminLogin() {
           {/* Logo */}
           <div className="mb-8">
             <div className="inline-flex items-center justify-center mb-4">
-              <h1 className="text-7xl font-bold text-gray-900 tracking-tight flex items-center">
-                F
-                <span className="relative inline-block mx-1">
-                  <svg 
-                    className="w-16 h-16" 
-                    viewBox="0 0 64 64" 
-                    fill="none"
-                  >
-                    <circle 
-                      cx="32" 
-                      cy="32" 
-                      r="28" 
-                      stroke="currentColor" 
-                      strokeWidth="3"
-                      className="text-gray-900"
-                    />
-                    <circle 
-                      cx="32" 
-                      cy="32" 
-                      r="5" 
-                      fill="#3686C7"
-                    />
-                  </svg>
-                </span>
-                undit
-              </h1>
+              <Image
+                src={foundItLogo}
+                alt="FoundIt"
+                width={300}
+                height={120}
+                className="w-auto h-24"
+                priority
+              />
             </div>
           </div>
           
@@ -91,32 +75,14 @@ export default function AdminLogin() {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 tracking-tight inline-flex items-center justify-center">
-              F
-              <span className="relative inline-block mx-1">
-                <svg 
-                  className="w-12 h-12" 
-                  viewBox="0 0 64 64" 
-                  fill="none"
-                >
-                  <circle 
-                    cx="32" 
-                    cy="32" 
-                    r="28" 
-                    stroke="currentColor" 
-                    strokeWidth="3"
-                    className="text-gray-900"
-                  />
-                  <circle 
-                    cx="32" 
-                    cy="32" 
-                    r="5" 
-                    fill="#3686C7"
-                  />
-                </svg>
-              </span>
-              undit
-            </h1>
+            <Image
+              src={foundItLogo}
+              alt="FoundIt"
+              width={250}
+              height={100}
+              className="w-auto h-20 mx-auto"
+              priority
+            />
           </div>
 
           {/* Form */}

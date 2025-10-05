@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import BottomNav from '@/components/BottomNav'
 import AdminSidebar from '@/components/AdminSidebar'
@@ -10,6 +10,7 @@ import DeleteConfirmModal from '@/components/DeleteConfirmModal'
 import Image from 'next/image'
 import { supabase } from '@/lib/supabase'
 import { isAdmin } from '@/lib/auth'
+import foundItLogo from '@/assets/founditdog.png'
 
 const categoryEmojis = {
   'Clothing': '👕',
@@ -20,7 +21,7 @@ const categoryEmojis = {
   'Other': '📦'
 }
 
-export default function AdminDashboard() {
+function DashboardContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [items, setItems] = useState([])
@@ -136,11 +137,15 @@ export default function AdminDashboard() {
         <div className="px-5 md:px-8 py-4 md:py-6">
           {/* Mobile Header */}
           <div className="flex md:hidden justify-between items-center mb-4">
-            <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-              <svg className="w-6 h-6 text-gray-700" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
+            <div className="p-2 translate-y-[5px]">
+              <Image
+                src={foundItLogo}
+                alt="FoundIt"
+                width={57}
+                height={57}
+                className="w-14 h-14"
+              />
+            </div>
             <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
             <div className="relative">
               <button 
@@ -413,5 +418,20 @@ export default function AdminDashboard() {
       `}</style>
       </div>
     </>
+  )
+}
+
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   )
 }
