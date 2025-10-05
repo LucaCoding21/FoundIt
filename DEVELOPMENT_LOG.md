@@ -1,5 +1,118 @@
 # FoundIt Development Log
 
+## October 5, 2025 - Image Loading Performance Optimization
+
+### Made Photos Load Faster Without Quality Loss
+
+Optimized image loading in dashboard and reports using Next.js Image optimization:
+
+✓ **Optimizations Added:**
+
+- **Blur Placeholders**: Light gray placeholder shows instantly while image loads
+- **Priority Loading**: First 3-4 images load immediately (above the fold)
+- **Responsive Sizes**: Browser loads appropriately sized images for each screen
+- **Smart Lazy Loading**: Other images load as user scrolls
+
+✓ **How It Works:**
+
+- Placeholder appears instantly (no white boxes)
+- First few images load with `priority` flag
+- Responsive `sizes` prop tells browser exact image size needed:
+  - Mobile: 50vw (half screen width)
+  - Tablet: 33vw (one-third screen)
+  - Desktop: 25vw (one-quarter screen)
+- Blur effect during load (better perceived performance)
+
+✓ **Applied To:**
+
+- Admin Dashboard grid (first 4 items priority)
+- Missing Reports page (first 3 reports priority)
+- Report detail page (main report image priority)
+- Matches grid (first 4 matches priority)
+
+✓ **Technical Details:**
+
+- Uses SVG blur placeholder (lightweight, instant)
+- Next.js automatically optimizes image sizes
+- No quality reduction (still high-res images)
+- Better bandwidth usage (loads correct size)
+- Faster perceived load time
+
+✓ **Benefits:**
+
+- Images appear to load faster
+- No empty white boxes while loading
+- Smooth blur-to-sharp transition
+- Reduced bandwidth on mobile
+- Better performance scores
+- No quality compromise
+
+**Files Updated:**
+
+- `/app/admin/dashboard/page.js` - Grid images optimized
+- `/app/admin/reports/page.js` - Report card images optimized
+- `/app/admin/matches/[reportId]/page.js` - Report and match images optimized
+
+**Result:**
+
+- Much faster perceived loading
+- Professional loading experience
+- Better mobile performance
+- Still displays full quality images
+- Simple, built-in Next.js features
+
+## October 5, 2025 - Demo Credentials Display
+
+### Added Judge Login Credentials Box
+
+Added a well-designed credentials box on the admin login page for judges and demo purposes:
+
+✓ **Features:**
+
+- Prominent "Demo Credentials" box with info icon
+- Light blue background with dashed border (theme colored)
+- Two white credential cards showing email and password
+- Copy-to-clipboard buttons for easy access
+- Clear labeling: "For judges and testing purposes"
+- Font-mono styling for credentials (easier to read)
+
+✓ **Credentials:**
+
+- Email: `admin@sfu.ca`
+- Password: `123admin`
+
+✓ **Design:**
+
+- Light blue background matching theme color
+- Dashed border for visual distinction
+- White cards with shadow for each credential
+- Blue info icon in circle
+- Copy buttons with hover states
+- Clean, professional appearance
+- Touch-friendly on mobile
+
+✓ **UX Details:**
+
+- Click copy button to copy credential
+- Alert confirms successful copy
+- Positioned below login form
+- Clearly labeled as "Demo Credentials"
+- Visible on both mobile and desktop
+- Maintains two-panel login design
+
+**Files Updated:**
+
+- `/app/admin/login/page.js` - Added credentials display box
+- `/lib/auth.js` - Updated password from `admin123` to `123admin`
+
+**Result:**
+
+- Judges can easily see and copy demo credentials
+- Professional, well-designed presentation
+- No confusion about test login details
+- Easy access without cluttering the main form
+- Maintains clean, modern login aesthetic
+
 ## October 5, 2025 - Bottom Navigation Size Increase
 
 ### Made Bottom Nav ~30% Bigger on Mobile

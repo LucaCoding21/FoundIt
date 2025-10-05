@@ -231,7 +231,7 @@ export default function AdminReports() {
         {/* Reports List */}
         <div className="px-5 md:px-8 pt-5 md:pt-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {filteredReports.map(report => {
+          {filteredReports.map((report, index) => {
             const matches = getPossibleMatches(report)
             
             return (
@@ -259,6 +259,10 @@ export default function AdminReports() {
                         alt={report.title}
                         fill
                         className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        priority={index < 3}
+                        placeholder="blur"
+                        blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2YzZjRmNiIvPjwvc3ZnPg=="
                       />
                     </div>
                   )}

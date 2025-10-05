@@ -299,7 +299,7 @@ function DashboardContent() {
       {/* Items Grid */}
       <div className="px-5 md:px-8 pt-5 md:pt-8">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {filteredItems.map((item) => (
+          {filteredItems.map((item, index) => (
             <div key={item.id} className="relative bg-white rounded-2xl overflow-hidden shadow-sm">
               {/* Full Card Image with Overlay */}
               <div 
@@ -311,6 +311,10 @@ function DashboardContent() {
                   alt={item.title || item.description}
                   fill
                   className="object-cover"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  priority={index < 4}
+                  placeholder="blur"
+                  blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2YzZjRmNiIvPjwvc3ZnPg=="
                 />
                 
                 {/* Dark gradient overlay at bottom */}
