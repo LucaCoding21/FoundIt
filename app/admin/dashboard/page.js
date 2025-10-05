@@ -9,7 +9,14 @@ import DeleteModal from '@/components/DeleteModal'
 import { supabase } from '@/lib/supabase'
 import { isAdmin } from '@/lib/auth'
 
-const categories = ['Clothing', 'Bag', 'Wallet', 'Electronics', 'Keys', 'Water Bottle', 'Umbrella', 'Book', 'ID/Cards', 'Other']
+const categories = [
+  'Clothing',
+  'Devices',
+  'Cables & Accessories',
+  'Essentials',
+  'Daily Items',
+  'Other'
+]
 const campuses = ['Burnaby', 'Surrey', 'Vancouver']
 
 export default function AdminDashboard() {
@@ -97,6 +104,7 @@ export default function AdminDashboard() {
       <div className="min-h-screen bg-slate-100">
         <AdminNav />
         <main className="max-w-7xl mx-auto px-4 py-16 text-center">
+          <div className="inline-block w-12 h-12 border-4 border-gray-300 border-t-sfu-red rounded-full animate-spin mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </main>
       </div>
@@ -107,27 +115,29 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-slate-100">
       <AdminNav />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">{items.length} items in system</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-gray-600">
+            <span className="font-semibold text-sfu-red">{items.length}</span> {items.length === 1 ? 'item' : 'items'} in system
+          </p>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-4 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-5 mb-6 sm:mb-8">
+          <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-4">
             <input
               type="text"
               placeholder="Search items..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
             />
             
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent bg-white"
             >
               <option value="all">All Categories</option>
               {categories.map(cat => (
@@ -138,7 +148,7 @@ export default function AdminDashboard() {
             <select
               value={selectedCampus}
               onChange={(e) => setSelectedCampus(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent bg-white"
             >
               <option value="all">All Campuses</option>
               {campuses.map(campus => (
@@ -148,8 +158,15 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Items Count */}
+        {filteredItems.length > 0 && (
+          <p className="text-sm text-gray-600 mb-4 px-1">
+            {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} found
+          </p>
+        )}
+
         {/* Items Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {filteredItems.map(item => (
             <ItemCard
               key={item.id}
@@ -162,8 +179,11 @@ export default function AdminDashboard() {
         </div>
 
         {filteredItems.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No items found.</p>
+          <div className="text-center py-16">
+            <svg className="w-20 h-20 mx-auto text-gray-300 mb-4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <p className="text-gray-500 text-lg font-medium">No items found</p>
             <p className="text-gray-400 text-sm mt-2">Add items from the Upload page</p>
           </div>
         )}

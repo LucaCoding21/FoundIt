@@ -3,7 +3,14 @@
 import { useState } from 'react'
 import ImageUpload from './ImageUpload'
 
-const categories = ['Clothing', 'Bag', 'Wallet', 'Electronics', 'Keys', 'Water Bottle', 'Umbrella', 'Book', 'ID/Cards', 'Other']
+const categories = [
+  'Clothing',
+  'Devices',
+  'Cables & Accessories',
+  'Essentials',
+  'Daily Items',
+  'Other'
+]
 const campuses = ['Burnaby', 'Surrey', 'Vancouver']
 
 export default function EditModal({ item, onClose, onSave }) {
@@ -45,6 +52,20 @@ export default function EditModal({ item, onClose, onSave }) {
             onImageUploaded={handleImageUploaded}
             required={false}
           />
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Title
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title || ''}
+              onChange={handleChange}
+              placeholder="e.g. Black Nike Hoodie"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
+            />
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

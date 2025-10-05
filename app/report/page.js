@@ -6,7 +6,14 @@ import ItemCard from '@/components/ItemCard'
 import ImageUpload from '@/components/ImageUpload'
 import { supabase } from '@/lib/supabase'
 
-const categories = ['Clothing', 'Bag', 'Wallet', 'Electronics', 'Keys', 'Water Bottle', 'Umbrella', 'Book', 'ID/Cards', 'Other']
+const categories = [
+  'Clothing',
+  'Devices',
+  'Cables & Accessories',
+  'Essentials',
+  'Daily Items',
+  'Other'
+]
 const campuses = ['Burnaby', 'Surrey', 'Vancouver']
 
 export default function ReportLost() {
@@ -87,7 +94,7 @@ export default function ReportLost() {
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 px-1">
                   Possible Matches ({matches.length})
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
                   {matches.map(item => (
                     <ItemCard key={item.id} item={item} isAdmin={false} />
                   ))}

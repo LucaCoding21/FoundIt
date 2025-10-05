@@ -53,6 +53,7 @@ export default function AdminReports() {
       <div className="min-h-screen bg-slate-100">
         <AdminNav />
         <main className="max-w-7xl mx-auto px-4 py-16 text-center">
+          <div className="inline-block w-12 h-12 border-4 border-gray-300 border-t-sfu-red rounded-full animate-spin mb-4"></div>
           <p className="text-gray-600">Loading...</p>
         </main>
       </div>
@@ -63,39 +64,51 @@ export default function AdminReports() {
     <div className="min-h-screen bg-slate-100">
       <AdminNav />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Lost Item Reports</h1>
-          <p className="text-gray-600">{reports.length} reports</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Lost Item Reports</h1>
+          <p className="text-gray-600">
+            <span className="font-semibold text-sfu-red">{reports.length}</span> {reports.length === 1 ? 'report' : 'reports'}
+          </p>
         </div>
 
         {/* Reports Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {reports.map(report => {
             const matches = getPossibleMatches(report)
             
             return (
-              <div key={report.id} className="bg-white rounded-xl shadow-sm p-4">
-                <div className="mb-3">
-                  <p className="text-gray-800 font-medium mb-2">{report.details}</p>
-                  <p className="text-sm text-gray-600 mb-3">
+              <div key={report.id} className="bg-white rounded-2xl shadow-sm p-5 hover:shadow-md smooth-transition">
+                <div className="mb-4">
+                  <p className="text-gray-800 font-semibold mb-2 line-clamp-2 leading-snug">
+                    {report.details}
+                  </p>
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                     Lost: {report.location_description}
                   </p>
                 </div>
                 
-                <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-3">
-                  <span className="bg-slate-100 px-2 py-1 rounded">{report.category}</span>
-                  <span className="bg-slate-100 px-2 py-1 rounded">{report.campus}</span>
-                  <span className="bg-slate-100 px-2 py-1 rounded">{formatDate(report.created_at)}</span>
+                <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-gray-600 mb-4">
+                  <span className="bg-slate-100 px-3 py-1.5 rounded-full font-medium">
+                    {report.category}
+                  </span>
+                  <span className="bg-slate-100 px-3 py-1.5 rounded-full font-medium">
+                    {report.campus}
+                  </span>
+                  <span className="bg-slate-100 px-3 py-1.5 rounded-full font-medium">
+                    {formatDate(report.created_at)}
+                  </span>
                 </div>
 
-                <div className="mb-3">
-                  <p className="text-sm text-gray-600">Contact: {report.email}</p>
+                <div className="mb-4 pb-4 border-b border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold">Contact:</span> {report.email}
+                  </p>
                 </div>
 
                 <button
                   onClick={() => setSelectedReport(report)}
-                  className="w-full px-4 py-2 text-sm bg-sfu-red text-white rounded-lg hover:bg-red-700 transition"
+                  className="w-full px-4 py-3 text-sm font-semibold bg-sfu-red text-white rounded-xl hover:bg-red-700 smooth-transition touch-feedback"
                 >
                   See Possible Matches ({matches.length})
                 </button>
@@ -105,8 +118,12 @@ export default function AdminReports() {
         </div>
 
         {reports.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No reports yet.</p>
+          <div className="text-center py-16">
+            <svg className="w-20 h-20 mx-auto text-gray-300 mb-4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p className="text-gray-500 text-lg font-medium">No reports yet</p>
+            <p className="text-gray-400 text-sm mt-2">Student reports will appear here</p>
           </div>
         )}
       </main>

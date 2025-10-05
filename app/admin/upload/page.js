@@ -6,13 +6,22 @@ import AdminNav from '@/components/AdminNav'
 import ImageUpload from '@/components/ImageUpload'
 import { supabase } from '@/lib/supabase'
 import { isAdmin } from '@/lib/auth'
+import { analyzeFoundItem } from '@/lib/gemini'
 
-const categories = ['Clothing', 'Bag', 'Wallet', 'Electronics', 'Keys', 'Water Bottle', 'Umbrella', 'Book', 'ID/Cards', 'Other']
+const categories = [
+  'Clothing',
+  'Devices',
+  'Cables & Accessories',
+  'Essentials',
+  'Daily Items',
+  'Other'
+]
 const campuses = ['Burnaby', 'Surrey', 'Vancouver']
 
 export default function AdminUpload() {
   const router = useRouter()
   const [formData, setFormData] = useState({
+    title: '',
     photo_url: '',
     category: categories[0],
     campus: campuses[0],
@@ -21,6 +30,8 @@ export default function AdminUpload() {
     hidden_notes: '',
   })
   const [submitting, setSubmitting] = useState(false)
+  const [analyzing, setAnalyzing] = useState(false)
+  const [imageFile, setImageFile] = useState(null)
 
   useEffect(() => {
     if (!isAdmin()) {
@@ -37,6 +48,33 @@ export default function AdminUpload() {
     setFormData(prev => ({ ...prev, photo_url: url }))
   }
 
+  const handleFileSelected = async (file) => {
+    setImageFile(file)
+    
+    // Start AI analysis immediately (runs in parallel with upload)
+    setAnalyzing(true)
+    
+    try {
+      const result = await analyzeFoundItem(file)
+      
+      if (result.success) {
+        setFormData(prev => ({
+          ...prev,
+          title: result.data.title || prev.title,
+          category: result.data.category || prev.category,
+          description: result.data.description || prev.description,
+          hidden_notes: result.data.hidden_notes || prev.hidden_notes,
+        }))
+      } else {
+        console.error('Analysis failed:', result.error)
+      }
+    } catch (error) {
+      console.error('Error analyzing photo:', error)
+    } finally {
+      setAnalyzing(false)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -50,6 +88,7 @@ export default function AdminUpload() {
     const { error } = await supabase
       .from('items')
       .insert([{
+        title: formData.title,
         photo_url: formData.photo_url,
         category: formData.category,
         campus: formData.campus,
@@ -72,20 +111,43 @@ export default function AdminUpload() {
     <div className="min-h-screen bg-slate-100">
       <AdminNav />
       
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Upload Found Item</h1>
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">Upload Found Item</h1>
 
-        <div className="bg-white rounded-xl shadow-sm p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-white rounded-2xl shadow-sm p-4 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             <ImageUpload
               currentImageUrl={formData.photo_url}
               onImageUploaded={handleImageUploaded}
+              onFileSelected={handleFileSelected}
               required={true}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {analyzing && (
+              <div className="w-full px-4 py-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl font-semibold flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+                AI analyzing photo...
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Title <span className="text-sfu-red">*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="e.g. Black Nike Hoodie"
+                required
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Category <span className="text-sfu-red">*</span>
                 </label>
                 <select
@@ -93,7 +155,7 @@ export default function AdminUpload() {
                   value={formData.category}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent bg-white"
                 >
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -102,7 +164,7 @@ export default function AdminUpload() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Campus <span className="text-sfu-red">*</span>
                 </label>
                 <select
@@ -110,7 +172,7 @@ export default function AdminUpload() {
                   value={formData.campus}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent bg-white"
                 >
                   {campuses.map(campus => (
                     <option key={campus} value={campus}>{campus}</option>
@@ -120,7 +182,7 @@ export default function AdminUpload() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Date Found <span className="text-sfu-red">*</span>
               </label>
               <input
@@ -129,12 +191,12 @@ export default function AdminUpload() {
                 value={formData.date_found}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Description <span className="text-sfu-red">*</span>
               </label>
               <textarea
@@ -144,12 +206,12 @@ export default function AdminUpload() {
                 placeholder="e.g. Black hoodie with white strings, size medium"
                 required
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent resize-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Hidden Notes (for verification)
               </label>
               <textarea
@@ -158,25 +220,25 @@ export default function AdminUpload() {
                 onChange={handleChange}
                 placeholder="e.g. Has small coffee stain on left sleeve"
                 rows={2}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent resize-none"
               />
-              <p className="text-sm text-gray-500 mt-1">Only visible to admins</p>
+              <p className="text-sm text-gray-500 mt-2">Only visible to admins</p>
             </div>
 
-            <div className="flex gap-4">
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex-1 px-6 py-3 bg-sfu-red text-white rounded-lg hover:bg-red-700 transition font-medium disabled:opacity-50"
-              >
-                {submitting ? 'Saving...' : 'Save Item'}
-              </button>
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium"
+                className="w-full sm:w-auto px-6 py-3.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 smooth-transition font-semibold touch-feedback"
               >
                 Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full sm:flex-1 px-6 py-3.5 bg-sfu-red text-white rounded-xl hover:bg-red-700 smooth-transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed touch-feedback"
+              >
+                {submitting ? 'Saving...' : 'Save Item'}
               </button>
             </div>
           </form>

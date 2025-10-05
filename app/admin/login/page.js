@@ -21,17 +21,17 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-8">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-sfu-red mb-2">FoundIt</h1>
-          <p className="text-gray-600">Admin Portal</p>
+          <h1 className="text-4xl sm:text-5xl font-bold text-sfu-red mb-3">FoundIt</h1>
+          <p className="text-gray-600 text-lg">Admin Portal</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-8">
-          <form onSubmit={handleLogin} className="space-y-4">
+        <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Admin Password
               </label>
               <input
@@ -42,22 +42,22 @@ export default function AdminLogin() {
                   setError('')
                 }}
                 placeholder="Enter admin password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sfu-red"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
               />
-              {error && <p className="text-sm text-sfu-red mt-1">{error}</p>}
-              <p className="text-xs text-gray-500 mt-1">Default: admin123</p>
+              {error && <p className="text-sm text-sfu-red mt-2">{error}</p>}
+              <p className="text-xs text-gray-500 mt-2">Default: admin123</p>
             </div>
 
             <button
               type="submit"
-              className="w-full px-4 py-3 bg-sfu-red text-white rounded-lg hover:bg-red-700 transition font-medium"
+              className="w-full px-4 py-4 bg-sfu-red text-white rounded-xl hover:bg-red-700 smooth-transition font-semibold text-base touch-feedback"
             >
               Login
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <Link href="/" className="text-sm text-gray-600 hover:text-sfu-red transition">
+            <Link href="/" className="text-sm text-gray-600 hover:text-sfu-red smooth-transition font-medium">
               Back to public site
             </Link>
           </div>

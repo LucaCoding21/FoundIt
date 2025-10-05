@@ -5,7 +5,14 @@ import ItemCard from '@/components/ItemCard'
 import Navbar from '@/components/Navbar'
 import { supabase } from '@/lib/supabase'
 
-const categories = ['Clothing', 'Bag', 'Wallet', 'Electronics', 'Keys', 'Water Bottle', 'Umbrella', 'Book', 'ID/Cards', 'Other']
+const categories = [
+  'Clothing',
+  'Devices',
+  'Cables & Accessories',
+  'Essentials',
+  'Daily Items',
+  'Other'
+]
 const campuses = ['Burnaby', 'Surrey', 'Vancouver']
 
 export default function Home() {
@@ -104,7 +111,7 @@ export default function Home() {
             )}
 
             {/* Items Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               {filteredItems.map(item => (
                 <ItemCard key={item.id} item={item} isAdmin={false} />
               ))}
