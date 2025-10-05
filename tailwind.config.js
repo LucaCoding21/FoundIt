@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'sfu-red': '#C8102E',
+        'theme-blue': '#3686C7',
       },
     },
   },

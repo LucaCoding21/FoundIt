@@ -11,19 +11,19 @@ export default function Navbar() {
       <nav className="bg-white shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/" className="text-xl sm:text-2xl font-bold text-sfu-red">
+            <Link href="/" className="text-xl sm:text-2xl font-bold text-gray-900">
               FoundIt
             </Link>
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex gap-8">
-              <Link href="/" className="text-gray-700 hover:text-sfu-red smooth-transition font-medium">
+              <Link href="/" className="text-gray-700 hover:opacity-80 smooth-transition font-medium" style={{ color: '#3686C7' }}>
                 Browse
               </Link>
-              <Link href="/report" className="text-gray-700 hover:text-sfu-red smooth-transition font-medium">
+              <Link href="/report" className="text-gray-700 hover:opacity-80 smooth-transition font-medium" style={{ color: '#3686C7' }}>
                 Report Lost
               </Link>
-              <Link href="/about" className="text-gray-700 hover:text-sfu-red smooth-transition font-medium">
+              <Link href="/about" className="text-gray-700 hover:opacity-80 smooth-transition font-medium" style={{ color: '#3686C7' }}>
                 About
               </Link>
             </div>
@@ -31,7 +31,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-slate-100 touch-feedback"
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 touch-feedback"
               aria-label="Toggle menu"
             >
               <svg className="w-6 h-6 text-gray-700" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,21 +58,21 @@ export default function Navbar() {
               <Link
                 href="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-slate-100 hover:text-sfu-red smooth-transition font-medium"
+                className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 smooth-transition font-medium"
               >
                 Browse
               </Link>
               <Link
                 href="/report"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-slate-100 hover:text-sfu-red smooth-transition font-medium"
+                className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 smooth-transition font-medium"
               >
                 Report Lost
               </Link>
               <Link
                 href="/about"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-slate-100 hover:text-sfu-red smooth-transition font-medium"
+                className="block px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 smooth-transition font-medium"
               >
                 About
               </Link>

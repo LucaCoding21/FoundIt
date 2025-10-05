@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import BottomNav from '@/components/BottomNav'
+import AdminSidebar from '@/components/AdminSidebar'
 import CategoryModal from '@/components/CategoryModal'
 import CampusModal from '@/components/CampusModal'
 import Image from 'next/image'
@@ -47,7 +48,6 @@ export default function AdminUpload() {
   const [campusModalOpen, setCampusModalOpen] = useState(false)
   const [preview, setPreview] = useState(null)
   const [uploading, setUploading] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
   const [abortController, setAbortController] = useState(null)
 
   useEffect(() => {
@@ -173,58 +173,80 @@ export default function AdminUpload() {
     setSubmitting(false)
 
     if (!error) {
-      setShowSuccess(true)
-      setTimeout(() => {
-        router.push('/admin/dashboard')
-      }, 1500)
+      // Navigate immediately to dashboard with success flag
+      router.push('/admin/dashboard?success=true')
     } else {
       alert('Error adding item: ' + error.message)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Top Header */}
-      <div className="bg-white sticky top-0 z-40 border-b border-gray-200">
-        <div className="px-5 py-4">
-          <div className="flex justify-between items-center">
-            <button 
-              onClick={() => router.back()}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <svg className="w-6 h-6 text-gray-700" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <h1 className="text-xl font-semibold text-gray-900">Upload Item</h1>
-            <button 
-              onClick={handleSubmit}
-              disabled={submitting || !formData.photo_url}
-              className="px-4 py-2 rounded-full font-semibold text-sm transition-all disabled:opacity-40"
-              style={{ 
-                backgroundColor: (!submitting && formData.photo_url) ? '#3686C7' : '#E5E7EB',
-                color: (!submitting && formData.photo_url) ? 'white' : '#9CA3AF'
-              }}
-            >
-              {submitting ? 'Saving...' : 'Done'}
-            </button>
+    <>
+      <AdminSidebar />
+      <div className="min-h-screen bg-gray-50 pb-20 md:pb-8 md:ml-64">
+        {/* Top Header */}
+        <div className="bg-white sticky top-0 z-40 border-b border-gray-200">
+          <div className="px-5 md:px-8 py-4 md:py-6">
+            {/* Mobile Header */}
+            <div className="flex md:hidden justify-between items-center">
+              <button 
+                onClick={() => router.back()}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-700" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <h1 className="text-xl font-semibold text-gray-900">Upload Item</h1>
+              <button 
+                onClick={handleSubmit}
+                disabled={submitting || !formData.photo_url}
+                className="px-4 py-2 rounded-full font-semibold text-sm transition-all disabled:opacity-40"
+                style={{ 
+                  backgroundColor: (!submitting && formData.photo_url) ? '#3686C7' : '#E5E7EB',
+                  color: (!submitting && formData.photo_url) ? 'white' : '#9CA3AF'
+                }}
+              >
+                {submitting ? 'Saving...' : 'Done'}
+              </button>
+            </div>
+
+            {/* Desktop Header */}
+            <div className="hidden md:flex justify-between items-center">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Upload Found Item</h1>
+                <p className="text-gray-500 mt-1">Add a new item to the database</p>
+              </div>
+              <button 
+                onClick={handleSubmit}
+                disabled={submitting || !formData.photo_url}
+                className="px-6 py-3 rounded-xl font-semibold text-base transition-all disabled:opacity-40 shadow-sm"
+                style={{ 
+                  backgroundColor: (!submitting && formData.photo_url) ? '#3686C7' : '#E5E7EB',
+                  color: (!submitting && formData.photo_url) ? 'white' : '#9CA3AF'
+                }}
+              >
+                {submitting ? 'Saving...' : 'Save Item'}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <form onSubmit={handleSubmit} className="px-5 py-6">
-        {/* Photo Upload Section */}
-        <div className="mb-6">
-          <label className="block">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              disabled={uploading}
-              className="hidden"
-            />
-            <div className={`relative w-full max-w-xs mx-auto aspect-[3/4] rounded-3xl overflow-hidden ${preview ? 'bg-black' : 'bg-gray-100'} cursor-pointer transition-all`}>
+        {/* Main Content */}
+        <form onSubmit={handleSubmit} className="px-5 md:px-8 py-6 md:py-8 max-w-7xl mx-auto">
+          {/* Desktop: Two Column Layout, Mobile: Single Column */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+            {/* Left Column: Photo Upload */}
+            <div>
+              <label className="block">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  disabled={uploading}
+                  className="hidden"
+                />
+                <div className={`relative w-full max-w-md mx-auto lg:mx-0 aspect-[3/4] rounded-3xl overflow-hidden ${preview ? 'bg-black' : 'bg-gray-100'} cursor-pointer transition-all`}>
               {preview ? (
                 <>
                   <Image
@@ -266,30 +288,30 @@ export default function AdminUpload() {
                   </div>
                 </div>
               )}
-            </div>
-          </label>
-        </div>
+                </div>
+              </label>
 
-        {/* AI Analysis Status */}
-        {analyzing && (
-          <div className="mb-6 px-4 py-3 rounded-2xl flex items-center justify-between gap-3" style={{ backgroundColor: 'rgba(54, 134, 199, 0.1)' }}>
-            <div className="flex items-center gap-3">
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-t-transparent" style={{ borderColor: '#3686C7', borderTopColor: 'transparent' }}></div>
-              <span className="text-sm font-medium" style={{ color: '#3686C7' }}>AI analyzing photo...</span>
+              {/* AI Analysis Status */}
+              {analyzing && (
+                <div className="mt-4 px-4 py-3 rounded-2xl flex items-center justify-between gap-3" style={{ backgroundColor: 'rgba(54, 134, 199, 0.1)' }}>
+                  <div className="flex items-center gap-3">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-t-transparent" style={{ borderColor: '#3686C7', borderTopColor: 'transparent' }}></div>
+                    <span className="text-sm font-medium" style={{ color: '#3686C7' }}>AI analyzing photo...</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCancelAnalysis}
+                    className="text-sm font-medium hover:opacity-70 transition-opacity"
+                    style={{ color: '#3686C7' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
-            <button
-              type="button"
-              onClick={handleCancelAnalysis}
-              className="text-sm font-medium hover:opacity-70 transition-opacity"
-              style={{ color: '#3686C7' }}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
 
-        {/* Form Fields */}
-        <div className="space-y-4">
+            {/* Right Column: Form Fields */}
+            <div className="space-y-4">
           {/* Title */}
           <div className="bg-white rounded-2xl p-4">
             <input
@@ -377,11 +399,12 @@ export default function AdminUpload() {
               rows={3}
               className="w-full text-sm text-gray-900 placeholder-gray-400 focus:outline-none resize-none"
             />
+              </div>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
 
-      <BottomNav />
+        <BottomNav />
 
       <CategoryModal
         isOpen={categoryModalOpen}
@@ -399,28 +422,7 @@ export default function AdminUpload() {
         }}
         selectedCampus={`SFU, ${formData.campus}`}
       />
-
-      {/* Success Toast */}
-      {showSuccess && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-in">
-          <div className="bg-green-500 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span className="font-semibold">Item saved successfully!</span>
-          </div>
-        </div>
-      )}
-
-      <style jsx global>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translate(-50%, -10px); }
-          to { opacity: 1; transform: translate(-50%, 0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
-    </div>
+      </div>
+    </>
   )
 }

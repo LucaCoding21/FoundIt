@@ -21,10 +21,10 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-sfu-red mb-3">FoundIt</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-3">FoundIt</h1>
           <p className="text-gray-600 text-lg">Admin Portal</p>
         </div>
 
@@ -42,22 +42,26 @@ export default function AdminLogin() {
                   setError('')
                 }}
                 placeholder="Enter admin password"
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent"
+                style={{ '--tw-ring-color': '#3686C7' }}
               />
-              {error && <p className="text-sm text-sfu-red mt-2">{error}</p>}
+              {error && <p className="text-sm mt-2" style={{ color: '#3686C7' }}>{error}</p>}
               <p className="text-xs text-gray-500 mt-2">Default: admin123</p>
             </div>
 
             <button
               type="submit"
-              className="w-full px-4 py-4 bg-sfu-red text-white rounded-xl hover:bg-red-700 smooth-transition font-semibold text-base touch-feedback"
+              className="w-full px-4 py-4 text-white rounded-xl smooth-transition font-semibold text-base touch-feedback"
+              style={{ backgroundColor: '#3686C7' }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#2c6ba3'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#3686C7'}
             >
               Login
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <Link href="/" className="text-sm text-gray-600 hover:text-sfu-red smooth-transition font-medium">
+            <Link href="/" className="text-sm text-gray-600 hover:opacity-80 smooth-transition font-medium" style={{ color: '#3686C7' }}>
               Back to public site
             </Link>
           </div>

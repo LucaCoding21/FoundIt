@@ -2,7 +2,7 @@ import Navbar from '@/components/Navbar'
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
@@ -19,19 +19,19 @@ export default function About() {
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">How It Works</h2>
               <ul className="space-y-3">
                 <li className="flex gap-3">
-                  <span className="text-sfu-red font-bold flex-shrink-0">1.</span>
+                  <span className="font-bold flex-shrink-0" style={{ color: '#3686C7' }}>1.</span>
                   <span>Campus staff upload photos of found items</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-sfu-red font-bold flex-shrink-0">2.</span>
+                  <span className="font-bold flex-shrink-0" style={{ color: '#3686C7' }}>2.</span>
                   <span>Students browse items online like a marketplace</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-sfu-red font-bold flex-shrink-0">3.</span>
+                  <span className="font-bold flex-shrink-0" style={{ color: '#3686C7' }}>3.</span>
                   <span>Report lost items to get matched with found items</span>
                 </li>
                 <li className="flex gap-3">
-                  <span className="text-sfu-red font-bold flex-shrink-0">4.</span>
+                  <span className="font-bold flex-shrink-0" style={{ color: '#3686C7' }}>4.</span>
                   <span>Claim items in person with proper verification</span>
                 </li>
               </ul>

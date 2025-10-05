@@ -16,7 +16,7 @@ export default function DeleteModal({ onClose, onConfirm }) {
           </button>
           <button
             onClick={onConfirm}
-            className="w-full sm:flex-1 px-6 py-3.5 bg-sfu-red text-white rounded-xl hover:bg-red-700 smooth-transition font-semibold touch-feedback"
+            className="w-full sm:flex-1 px-6 py-3.5 bg-red-600 text-white rounded-xl hover:bg-red-700 smooth-transition font-semibold touch-feedback"
           >
             Delete
           </button>

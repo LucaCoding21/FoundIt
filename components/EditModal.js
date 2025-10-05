@@ -63,7 +63,8 @@ export default function EditModal({ item, onClose, onSave }) {
               value={formData.title || ''}
               onChange={handleChange}
               placeholder="e.g. Black Nike Hoodie"
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent"
+              style={{ '--tw-ring-color': '#3686C7' }}
             />
           </div>
 
@@ -76,7 +77,8 @@ export default function EditModal({ item, onClose, onSave }) {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent"
+              style={{ '--tw-ring-color': '#3686C7' }}
               >
                 {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -92,7 +94,8 @@ export default function EditModal({ item, onClose, onSave }) {
                 name="campus"
                 value={formData.campus}
                 onChange={handleChange}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent"
+              style={{ '--tw-ring-color': '#3686C7' }}
               >
                 {campuses.map(campus => (
                   <option key={campus} value={campus}>{campus}</option>
@@ -110,7 +113,8 @@ export default function EditModal({ item, onClose, onSave }) {
               name="date_found"
               value={formData.date_found}
               onChange={handleChange}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sfu-red focus:border-transparent"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:border-transparent"
+              style={{ '--tw-ring-color': '#3686C7' }}
             />
           </div>
 
@@ -150,7 +154,10 @@ export default function EditModal({ item, onClose, onSave }) {
             </button>
             <button
               type="submit"
-              className="w-full sm:flex-1 px-6 py-3.5 bg-sfu-red text-white rounded-xl hover:bg-red-700 smooth-transition font-semibold touch-feedback"
+              className="w-full sm:flex-1 px-6 py-3.5 text-white rounded-xl smooth-transition font-semibold touch-feedback"
+              style={{ backgroundColor: '#3686C7' }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#2c6ba3'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#3686C7'}
             >
               Save Changes
             </button>

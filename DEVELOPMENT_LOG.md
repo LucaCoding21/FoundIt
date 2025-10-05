@@ -1,5 +1,682 @@
 # FoundIt Development Log
 
+## October 5, 2025 - PWA (Progressive Web App) Setup
+
+### Mobile Installation Support
+
+Configured FoundIt as a Progressive Web App for native app-like experience on mobile devices:
+
+✓ **PWA Configuration Complete**
+
+- Created `/public/manifest.json` with app metadata
+- App name: "FoundIt - Campus Lost & Found"
+- Theme color: #3686C7 (FoundIt blue)
+- Display mode: standalone (fullscreen experience)
+- Icon configuration for 192px and 512px sizes
+
+✓ **Service Worker Implementation**
+
+- Created `/public/sw.js` for offline functionality
+- Network-first caching strategy
+- Automatic cache management and updates
+- Fallback to cached content when offline
+- Cache versioning for easy updates
+
+✓ **Apple iOS Support**
+
+- Apple-specific meta tags for home screen installation
+- Custom app title: "FoundIt"
+- Status bar styling configured
+- Proper viewport settings for mobile
+- Touch icon configuration
+
+✓ **Service Worker Registration**
+
+- Created `/app/register-sw.js` client component
+- Automatic registration on page load
+- Compatible with Next.js App Router
+- Integrated into root layout
+
+✓ **Installation Features**
+
+**iOS (iPhone/iPad):**
+
+- Add to Home Screen from Safari share menu
+- Fullscreen app experience (no browser UI)
+- Custom splash screen with FoundIt branding
+- Appears in app switcher like native apps
+
+**Android:**
+
+- Install prompt from Chrome menu
+- Native-like installation flow
+- App drawer integration
+- Standalone window mode
+
+✓ **Offline Functionality**
+
+- Previously viewed pages work offline
+- Service worker caches essential resources
+- Network-first strategy ensures fresh content
+- Graceful fallback to cached content
+
+✓ **Performance Benefits**
+
+- Faster loading with service worker caching
+- Instant app launch from home screen
+- Reduced data usage with smart caching
+- Better performance on slow networks
+
+**Files Created:**
+
+- `/public/manifest.json` - PWA configuration
+- `/public/sw.js` - Service worker for offline support
+- `/app/register-sw.js` - Client-side SW registration
+- `/instructions/PWA_SETUP.md` - Complete setup guide
+- `/public/create-icons.html` - Icon generator tool
+
+**Files Updated:**
+
+- `/app/layout.js` - Added PWA meta tags and manifest link
+
+**Next Steps:**
+
+- Add icon files to `/public` folder:
+  - `icon-192.png` (192x192 pixels)
+  - `icon-512.png` (512x512 pixels)
+  - `favicon.ico` (optional)
+- Open `/public/create-icons.html` in browser to generate placeholder icons
+- Or use online tools like favicon.io or pwabuilder.com
+- Test installation on iOS and Android devices
+
+**Result:**
+
+- FoundIt can now be installed on mobile home screens
+- Native app-like experience without app stores
+- Works offline with service worker caching
+- Professional PWA setup following best practices
+- Simple, non-overengineered implementation
+
+## October 5, 2025 - Mobile Navigation Enhancement
+
+### Student Report Image Upload Bug Fix
+
+Fixed critical bug preventing students from uploading images when reporting lost items:
+
+✓ **Issue:**
+
+- Student report page was trying to upload to wrong storage bucket (`items`)
+- Correct bucket is `foundit-images`
+- Caused "Bucket not found" error (400 status)
+- Students couldn't attach photos to their reports
+
+✓ **Solution:**
+
+- Changed bucket from `items` to `foundit-images`
+- Added `reports/` folder prefix for organization
+- Added better filename: `reports/timestamp-randomid.ext`
+- Added cache control and upsert options for consistency
+- Improved error message
+
+✓ **File Organization:**
+
+- Admin uploads: `foundit-images/items/`
+- Student reports: `foundit-images/reports/`
+
+**Files Updated:**
+
+- `app/report/page.js` - Fixed bucket name and file path
+
+**Result:**
+
+- Students can now successfully upload photos with their reports
+- Better file organization in storage
+- Consistent with admin upload implementation
+
+### Upload Flow Improvement
+
+Improved the upload flow to provide instant feedback and seamless navigation:
+
+✓ **Before:**
+
+- Upload item
+- Show success toast on upload page
+- Wait 1.5 seconds
+- Navigate to dashboard
+
+✓ **After:**
+
+- Upload item
+- Navigate to dashboard immediately
+- Show success toast on dashboard
+- See newly uploaded item right away
+
+✓ **Benefits:**
+
+- Instant navigation - no waiting
+- Immediate visual confirmation of uploaded item
+- Success toast appears on dashboard with smooth animation
+- Toast auto-dismisses after 3 seconds
+- URL parameter automatically cleaned up
+
+✓ **Technical Implementation:**
+
+- Upload page navigates with `?success=true` query parameter
+- Dashboard checks for success parameter on mount
+- Shows success toast and removes URL parameter
+- Uses `router.replace()` to clean URL without page reload
+- Consistent green success toast across both pages
+
+**Files Updated:**
+
+- `app/admin/upload/page.js` - Immediate navigation after successful upload
+- `app/admin/dashboard/page.js` - Success toast detection and display
+
+**Result:**
+
+- Smoother, more responsive upload experience
+- Instant feedback with new item visible immediately
+- Professional flow that feels native and polished
+
+### Category Button Width Fix
+
+Fixed "All Categories" button stretching to full width on mobile:
+
+✓ **Issue:**
+
+- Category button was taking full width on mobile in both student and admin dashboards
+- Should be a normal-sized pill like other category options
+
+✓ **Solution:**
+
+- Added `w-fit` class to category button
+- Button now only takes width needed for its content
+- Consistent pill appearance across all states
+
+**Files Updated:**
+
+- `app/page.js` - Student portal home page
+- `app/admin/dashboard/page.js` - Admin dashboard
+
+### Bottom Navigation Active State Redesign
+
+Redesigned the active state indicator for mobile bottom navigation with a subtle, elegant approach:
+
+✓ **Before:**
+
+- Small blue dot (1.5px) below active icon
+- Hard to see and not visually clear
+
+✓ **After:**
+
+- Active icon highlighted in thematic blue (#3686C7)
+- Active icon has bolder stroke weight (2.5 vs 2)
+- Inactive icons in gray (#9CA3AF) with normal stroke
+- All icons remain same size for consistency
+- All icons use outline style (no filled icons)
+- Fast 200ms color transition
+
+✓ **Design Improvements:**
+
+- Subtle, elegant active state that doesn't jump around
+- Color + slight weight change provides clear feedback
+- Consistent icon sizes prevent layout shift
+- Smooth color transitions feel natural
+- Cleaner than blue dots, less dramatic than size/fill changes
+
+✓ **Technical Implementation:**
+
+- `transition-colors duration-200 ease-out` for smooth color changes
+- Dynamic stroke weight: 2.5 for active, 2 for inactive
+- All icons use outline style (fill="none")
+- Consistent w-7 h-7 sizing across all states
+- Inline style colors for precise theme blue matching
+
+**Files Updated:**
+
+- `components/BottomNav.js` - Admin portal mobile navigation
+- `app/page.js` - Student portal mobile navigation (Home page)
+
+**Result:**
+
+- Refined, professional navigation that doesn't feel jumpy
+- Clear active state with minimal visual change
+- Smooth, subtle transitions
+- Consistent sizing prevents jarring layout shifts
+
+## October 5, 2025 - Desktop UI/UX Redesign
+
+### Complete Desktop Optimization
+
+Redesigned all pages with proper desktop layouts while preserving the mobile-first design:
+
+✓ **Admin Portal Desktop Redesign**
+
+- Created `AdminSidebar` component for desktop navigation
+- Professional sidebar navigation replaces bottom nav on desktop (md+ breakpoints)
+- Desktop grid layouts: 3-4 columns vs 2 on mobile
+- Better horizontal space utilization with max-width containers
+- Larger, bolder desktop headers with descriptions
+- Desktop-specific action buttons and controls
+
+✓ **Admin Dashboard (Desktop)**
+
+- Sidebar navigation with Home, Upload, Reports sections
+- 4-column grid layout (lg: breakpoint) vs 2 columns on mobile
+- Large header: "Dashboard" with subtitle
+- Settings menu in top-right
+- Better filters layout (horizontal row vs stacked)
+- Improved spacing and padding (px-8 vs px-5)
+
+✓ **Admin Upload Page (Desktop)**
+
+- Two-column layout: Photo left, Form fields right
+- Large header: "Upload Found Item" with "Save Item" button
+- Photo section max-width for better proportions
+- Desktop-optimized form layout
+- Better use of horizontal space
+
+✓ **Admin Reports Page (Desktop)**
+
+- 3-column grid layout (lg: breakpoint) vs 1 column mobile
+- Large header: "Missing Reports" with subtitle
+- Report cards maintain mobile design with hover effects
+- Better grid spacing (gap-6 vs gap-4)
+
+✓ **Admin Matches Page (Desktop)**
+
+- 4-column grid for matching items
+- Max-width containers (max-w-7xl)
+- Desktop header with back button + title + description
+- Larger images and better proportions
+- Improved spacing throughout
+
+✓ **Student Portal Desktop Redesign**
+
+- No sidebar (students don't need complex navigation)
+- 5-column grid layout (xl: breakpoint) vs 2 on mobile
+- Max-width containers for centered content
+- Desktop "Report Lost Item" button in header
+- Bottom nav hidden on desktop (md:hidden)
+- Large hero header on home: "Find Your Lost Item"
+
+✓ **Student Home Page (Desktop)**
+
+- 5-column responsive grid (2 → 3 → 4 → 5 cols)
+- Large header with description and actions
+- "Report Lost Item" button in top-right
+- Better filter layout (horizontal)
+- Max-width centered content (max-w-7xl)
+
+✓ **Student Report Page (Desktop)**
+
+- Centered form with max-width (max-w-5xl)
+- Large header with Cancel/Submit buttons
+- Photo upload centered and properly sized
+- Better form spacing and padding
+
+✓ **Item Detail Pages (Desktop)**
+
+- Centered content (max-w-4xl)
+- Larger images (max-w-2xl)
+- Better proportions and spacing
+- Improved typography scale
+
+✓ **Design System Updates**
+
+- Mobile: Preserved 100% (bottom nav, 2-col grids, compact spacing)
+- Desktop breakpoints: md (768px), lg (1024px), xl (1280px)
+- Sidebar: 256px wide (w-64), fixed left side
+- Main content: ml-64 offset on desktop for admin pages
+- Max-width containers: 5xl (64rem), 7xl (80rem)
+- Grid scaling: 2 → 3 → 4 → 5 columns based on breakpoint
+- Padding scale: px-5 → px-8, py-4 → py-6
+- Gap scale: gap-4 → gap-6
+- Typography scale: text-xl → text-3xl/4xl for headers
+
+✓ **Mobile Preservation**
+
+- All mobile designs remain unchanged
+- Bottom navigation still works on mobile
+- 2-column grids preserved for mobile
+- Mobile-first responsive classes (flex md:hidden, etc.)
+- Mobile headers separate from desktop headers
+
+✓ **Responsive Patterns Used**
+
+```javascript
+// Grid responsive pattern
+className = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6";
+
+// Padding responsive pattern
+className = "px-5 md:px-8 py-4 md:py-6";
+
+// Hide on desktop, show on mobile
+className = "md:hidden";
+
+// Hide on mobile, show on desktop
+className = "hidden md:flex";
+
+// Sidebar offset for admin pages
+className = "md:ml-64";
+```
+
+**Implementation:**
+
+- Created `components/AdminSidebar.js` for desktop admin navigation
+- Updated all admin pages with sidebar integration
+- Updated all pages with responsive grid systems
+- Added desktop headers separate from mobile headers
+- Implemented max-width containers for better desktop layouts
+- Used Tailwind responsive utilities throughout
+- Simple, non-overengineered solution
+- Maintained exact same mobile UX
+
+**Result:**
+
+- Desktop experience now professional and spacious
+- Mobile experience completely unchanged
+- Same beautiful design language across all screen sizes
+- Better use of screen real estate on larger displays
+- Improved usability for desktop admin workflows
+
+## October 5, 2025 - Color System Cleanup
+
+### Removed Old Red Branding
+
+Cleaned up all remaining instances of the old SFU red (#C8102E) color throughout the codebase:
+
+✓ **Files Updated:**
+
+- `app/admin/login/page.js` - Changed to theme blue
+- `components/ImageUpload.js` - Changed to theme blue
+- `components/EditModal.js` - Save button now theme blue
+- `components/DeleteModal.js` - Delete button kept as red (semantic)
+- `app/about/page.js` - Numbered list now theme blue
+- `tailwind.config.js` - Removed `sfu-red`, added `theme-blue`
+
+✓ **New Consistent Color System:**
+
+- Primary color: Theme blue (#3686C7)
+- Hover state: Darker blue (#2c6ba3)
+- Destructive actions: Standard red (bg-red-600)
+- Error messages: Standard red (#dc2626)
+- All interactive elements use theme blue
+- Consistent branding across all pages
+
+✓ **Background Updates:**
+
+- Changed `bg-slate-100` to `bg-gray-50` for consistency
+- Cleaner, more modern look
+- Better matches the new design system
+
+**Implementation:**
+
+- Replaced all `sfu-red` class usage with inline styles or standard colors
+- Updated hover states to use proper blue shades
+- Kept semantic red colors for destructive actions (delete)
+- Simple, maintainable color system
+
+## October 5, 2025 - Student Dashboard & Report Form
+
+### Student Report Form - Apple Quality ✨
+
+Completely redesigned the report lost item form with world-class UI/UX:
+
+✓ **Top Navigation**
+
+- Cancel button (left), "Report Lost Item" title (center), "Done" button (right)
+- Done button changes color based on form validity
+- Disabled state when required fields are empty
+- Active state in theme blue when ready to submit
+- iOS-style top bar pattern
+
+✓ **Hero Photo Upload**
+
+- Large 4:3 aspect ratio photo area (optional)
+- Clean empty state with camera icon
+- "Add Photo (Optional)" with helpful hint
+- Hover overlay shows "Change Photo" button
+- Instant local preview with smooth transitions
+- Upload spinner overlay
+- No AI analysis (student-focused simplicity)
+
+✓ **Modern Form Design**
+
+- No traditional labels above fields - clean card-based layout
+- Floating labels inside white rounded cards
+- Each field in its own card with proper spacing
+- Minimal visual noise, maximum clarity
+
+✓ **Form Fields**
+
+- Title: "What did you lose?" - clean inline input
+- Category: Tap to open modal with emojis
+- Campus: Tap to open modal selector
+- Date Lost: Native date picker
+- Location: "Where did you lose it?" input
+- Description: Multi-line textarea with placeholder
+- Email: Required contact field
+- Phone: Optional contact field
+
+✓ **Smart UX**
+
+- Form validation with disabled/enabled Done button
+- Success toast notification (green with checkmark)
+- Auto-redirect to home after submission
+- All fields properly labeled in cards
+- Touch-friendly inputs
+- Consistent 2xl border radius
+- Helper text at bottom explaining the process
+
+✓ **Visual Feedback**
+
+- Green success toast slides down from top
+- "Report submitted" confirmation
+- Smooth transitions on all interactions
+- No jarring browser alerts
+
+✓ **Design Principles**
+
+- Cards over borders
+- White space is a feature
+- Touch-first interactions
+- Progressive disclosure
+- Visual hierarchy through size and spacing
+- Clean, minimal UI
+- Theme blue (#3686C7) for interactive elements
+
+**Implementation:**
+
+- Completely rewrote `/app/report/page.js`
+- Reused CategoryModal and CampusModal components
+- Integrated with Supabase for report storage
+- Simple image upload (no AI analysis)
+- Mobile-first, Apple-quality design
+- Non-overengineered, intuitive solution
+
+**Database Changes:**
+
+- Added `title` field to reports table (what they lost)
+- Added `phone` field to reports table (optional contact)
+- Added `date_lost` field to reports table
+- Migration file: `/instructions/report-fields-migration.sql`
+
+### Student Home Page Complete Redesign
+
+Redesigned the student dashboard to match the modern mobile-first design:
+
+✓ **Layout & Design**
+
+- Clean top header with search icon, "Home" title, and settings icon
+- Prominent search bar with blue icon (#3686C7)
+- Location selector showing campus
+- Category filter button with horizontal scrolling pills
+- 2-column grid layout optimized for mobile
+- NO delete buttons (student view is read-only)
+- Cards clickable to view item details
+
+✓ **Card Design**
+
+- Full-height images (3:4 aspect ratio) with text overlaid at bottom
+- Dark gradient overlay for text readability
+- Title, location, and category badge overlaid on image
+- Blue category pills with emoji icons
+- Touch-friendly and responsive
+
+✓ **Settings Menu**
+
+- Click settings icon (gear) in top-right to open menu
+- Two options: Help and About
+- Help shows "not yet implemented" alert
+- About navigates to about page
+- Clean dropdown with icons and proper styling
+- Closes when clicking outside
+
+✓ **Bottom Navigation**
+
+- Two buttons: Home and Report Lost Item
+- Home icon filled with blue dot indicator (active state)
+- Report/Upload icon in gray (inactive)
+- Clean, minimal iOS-style design
+- Fixed at bottom with safe area support
+
+✓ **Consistency with Admin**
+
+- Same color scheme (theme blue #3686C7)
+- Same category emojis and styling
+- Same modal designs for category/campus selection
+- Same search and filter functionality
+- Different navigation to match student needs
+
+✓ **Student-Specific Features**
+
+- No admin functions (no delete, no edit)
+- Focus on browsing and claiming items
+- Report lost item button in bottom nav
+- Simplified navigation with just 2 bottom buttons
+
+**Implementation:**
+
+- Completely rewrote `/app/page.js` with new design
+- Reused CategoryModal and CampusModal components
+- Custom bottom nav built into page (student-specific)
+- Mobile-first, clean UI without unnecessary chrome
+- Simple, non-overengineered solution
+
+### Student Item Detail Page
+
+Redesigned student item detail page to match reference wireframe:
+
+✓ **Clean Layout**
+
+- Back button at top-left
+- Large 4:3 image with category badge overlay
+- Title and date side-by-side
+- Location with blue pin icon
+- Description section
+- Blue info box: "Think this is yours?"
+
+✓ **Claim Instructions**
+
+- Clear call-to-action box
+- Office location (AQ 2030)
+- Hours (9 AM – 5 PM)
+- Requirement (student ID)
+- Light blue background for visibility
+
+✓ **Design**
+
+- White background (clean, minimal)
+- Theme blue (#3686C7) for accents
+- Card-based layout with proper spacing
+- Mobile-optimized touch targets
+- Simple, actionable UI
+
+**Implementation:**
+
+- Rewrote `/app/item/[id]/page.js`
+- Removed complex "How to Claim" steps
+- Simplified to single clear instruction box
+- Matches wireframe 1:1
+
+## October 5, 2025 - Admin Item Detail Page & Settings Menu
+
+### Settings Menu (Dashboard & Reports)
+
+Added clean settings dropdown menu to both Dashboard and Missing Report screens:
+
+✓ **Settings Dropdown**
+
+- Click settings icon (gear) in top-right to open menu
+- Two options: Help and Logout
+- Help shows "not yet implemented" alert
+- Logout clears session and redirects to login
+- Clean dropdown with icons and proper styling
+- Closes when clicking outside
+- Consistent across both Dashboard and Reports pages
+
+✓ **Design**
+
+- White rounded card with shadow and border
+- Help option with question mark icon (gray text)
+- Logout option with logout icon (red text)
+- Border separator between options
+- Smooth hover states with background changes
+- Touch-optimized button sizes
+
+### Dashboard Item Detail View
+
+Implemented a clean, mobile-optimized item detail page for the admin dashboard:
+
+✓ **Item Detail Page**
+
+- Clicking dashboard cards now navigates to dedicated item detail page
+- Full-screen view with back button for easy navigation
+- Clean white background with modern card design
+- Three-dot menu in top-right for Edit/Delete actions
+
+✓ **Layout & Design**
+
+- Large 4:3 aspect ratio image with category badge overlay
+- Title and date side-by-side at top
+- Location display with pin icon (theme blue #3686C7)
+- Description section with label
+- Hidden Notes in gray rounded card
+- Fixed "Item Found" button at bottom
+
+✓ **Three-Dot Menu**
+
+- Dropdown menu with Edit and Delete options
+- Edit option opens existing EditModal
+- Delete option shows confirmation modal
+- Smooth animations and touch-optimized
+- Closes when clicking outside
+
+✓ **Functionality**
+
+- Edit modal integration for updating item details
+- Delete confirmation before removal
+- "Item Found" button removes item from database (same as delete)
+- Auto-navigation back to dashboard after delete or item found
+- Proper authentication check
+
+✓ **Mobile-First Design**
+
+- Follows reference design exactly
+- Theme blue (#3686C7) for all interactive elements
+- Safe area support for notched devices
+- Touch-friendly tap targets
+- Clean, minimal UI without unnecessary chrome
+
+**Implementation:**
+
+- Created new page: `/app/admin/item/[id]/page.js`
+- Updated dashboard cards to be clickable with navigation
+- Integrated with existing EditModal and DeleteModal components
+- Stop propagation on delete button to prevent card click
+- Simple, non-overengineered solution
+
 ## October 5, 2025 - Possible Matches Full Screen View
 
 ### Reports Matches Redesign
@@ -247,18 +924,25 @@ Redesigned the full-screen matches detail page to match UI/UX design specificati
   - Blue category pills with emoji icons
   - Touch-friendly and clickable
 
-✓ **Item Detail Modal - Full Screen**
+✓ **Item Detail Modal - Full Screen with Contact Actions**
 
 - Full-screen slide-up modal when clicking match cards
 - Back arrow (left) and three-dot menu (right) at top
 - Large image with category badge overlay at top-right
 - Title with date on the right side
 - Blue location pin with campus info
-- Contact/description section
+- Description section
 - Hidden notes in gray background box
-- Blue "Item Found" button at bottom
+- **Reporter Contact Section:**
+  - "Reporter Contact" header with border separator
+  - Email displayed with icon in rounded gray badge
+  - Phone number displayed with icon in rounded gray badge
+  - Two action buttons: "Email" (outlined) and "Call" (filled blue)
+  - Email button opens mailto: with pre-filled template about the match
+  - Call button opens tel: link for direct dialing on mobile
 - All content fits on one screen without scrolling
 - Smooth slide-up animation from bottom
+- Clean, actionable UI for admins to contact reporters directly
 
 ✓ **Design Consistency**
 
